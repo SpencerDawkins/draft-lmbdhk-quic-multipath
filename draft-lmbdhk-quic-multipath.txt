@@ -5,14 +5,14 @@
 QUIC Working Group                                                Y. Liu
 Internet-Draft                                                     Y. Ma
 Intended status: Standards Track                            Alibaba Inc.
-Expires: 28 April 2022                                     Q. De Coninck
+Expires: 30 April 2022                                     Q. De Coninck
                                                           O. Bonaventure
                                                                UCLouvain
                                                               C. Huitema
                                                     Private Octopus Inc.
                                                       M. Kuehlewind, Ed.
                                                                 Ericsson
-                                                         25 October 2021
+                                                         27 October 2021
 
 
                       Multipath Extension for QUIC
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 April 2022.
+   This Internet-Draft will expire on 30 April 2022.
 
 Copyright Notice
 
@@ -640,7 +640,7 @@ Table of Contents
    If the multipath option is enabled with a value of 2, each path has
    its own packet number space for transmitting 1-RTT packets and a new
    ACK frame format is used as specified in Section 10.2.  Compared to
-   the QUIC v1 ACK frame, the MP_ACK frames additionally contains a
+   the QUIC v1 ACK frame, the ACK_MP frames additionally contains a
    Packet Number Space Identifier (PN Space ID).  The PN Space ID used
    to distinguish packet number spaces for different paths and is simply
    derived from the sequence number of Destination Connection ID.
