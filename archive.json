@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-26T00:28:54.282531+00:00",
+  "timestamp": "2021-10-28T00:29:44.223224+00:00",
   "repo": "mirjak/draft-lmbdhk-quic-multipath",
   "labels": [
     {
@@ -1032,9 +1032,17 @@
       ],
       "body": "In RFC9000 path migration is restricted to clients only, mainly because of problems with NATs which a) is the main use case to have migrations (address change at the client only) and b) could anyway cause failure for mitigation attempts from the server.\r\n\r\nHowever, with multipath, failure of opening a new path is less critical as the old path(s) is not abandon at the same time. Therefore we should further discussion if that restriction is still technical useful or if it can be released easily.\r\n\r\nThis issue was initially discussed as part of issue #31 ",
       "createdAt": "2021-10-25T10:49:06Z",
-      "updatedAt": "2021-10-25T10:49:38Z",
+      "updatedAt": "2021-10-26T07:43:33Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "yfmascgy",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think there might be also a security concern. Suppose a victim's address is advertised and the server attempts to open a new path with that address.",
+          "createdAt": "2021-10-26T07:43:33Z",
+          "updatedAt": "2021-10-26T07:43:33Z"
+        }
+      ]
     },
     {
       "number": 50,
@@ -1053,6 +1061,368 @@
       "updatedAt": "2021-10-25T12:31:42Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 51,
+      "id": "I_kwDOGNtpaM49v64i",
+      "title": "Mechanisms to avoid path timeout",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/51",
+      "state": "OPEN",
+      "author": "yfmascgy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "For -01"
+      ],
+      "body": "The current draft says that \"Servers SHOULD stop sending traffic on paths through where no non-probing packet was received in the last 3 path RTTs\". However, it is possible that only a few data was generated in the past few RTTs due to app-limit conditions, and as a result, only one path was used. So I think, in section 3.2.3, we should suggest the use of some keep-alive mechanisms such as sending ping frames on a particular path if one is interested in keeping that path alive. Let me know what you think?",
+      "createdAt": "2021-10-26T08:06:33Z",
+      "updatedAt": "2021-10-27T15:47:13Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "I fully agree this is an issue to be solved (#68).\r\n\r\nHowever, I think that before trying to find measures at the client side to take into account that server behavior, the text should provide a motivation for such restriction, especially that in typical scenarios the data is flying from the servers and that MP_ACK may be over any path \r\n\r\n```\r\n   ACK_MP frame Section 10.2 can be returned via either a different\r\n   path, or the same path identified by the Path Identifier, based on\r\n   different strategies of sending ACK_MP frames. \r\n```\r\n(BTW, s/ACK_MP frame Section 10.2/ACK_MP frame (Section 10.2)\r\n\r\nI'm afraid the use of keepalives may not work in scenarios where the external addresses are not local to the client (and thus has no control on the paths that will be used), e.g.,\r\n\r\n~~~~~\r\n                +----+\r\n                 | @1   \\\r\n  C---------R          ======S\r\n                 | @2    /\r\n                +-----+\r\n~~~~~\r\n\r\n* C/S negotiate multipathing by default.\r\n* R distributes the load based on a local policy.   \r\n* S/C uses PATH_CHALLENGE and PATH_RESPONSE to validate the paths.\r\n* C does not control the path that will be used by R when forwarding packets. \r\n\r\n\r\n\r\n",
+          "createdAt": "2021-10-27T07:42:54Z",
+          "updatedAt": "2021-10-27T07:47:30Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Med, I am not sure that I understand the scenario that you are describing. There is a router R balancing the load over two paths, and using some NAT like functionality to rewrite the client source address, and presumably the client's port number. This is not supported by either RFC 9000 or by our multipath draft.\r\n\r\nThe server will likely treat arrival from @1 and @2 as NAT rebinding, and the connection will end up using a single path. \r\n\r\n\r\n",
+          "createdAt": "2021-10-27T15:47:12Z",
+          "updatedAt": "2021-10-27T15:47:12Z"
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "id": "I_kwDOGNtpaM49wPGz",
+      "title": "this approach requires the use of a connection ID",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/53",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "`While separate packet number spaces allow for more efficient ACK encoding, especially when paths have highly different latencies, this approach requires the use of a connection ID`\r\n\r\nNot sure to understand why the last part of the sentence is an issue. The use of zero-length connection IDs is problematic anyway in setups with NATs, for example. ",
+      "createdAt": "2021-10-26T09:25:47Z",
+      "updatedAt": "2021-10-26T19:04:27Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "I agree that in many deployments you want at least one CID from the client to server. Multiple packet numbers as currently defined however requires CIDs in both direction; there is separate issue #27 to discuss that.\r\n\r\nThe next sentence also further explains that there might be other deployments though, e.g. in constraint networks, that might also benefit from saving the bits of the CID.\r\n\r\nThis one sentence is of course only a very brief summary of the pros and cons of the different approach and more discussion is needed in the group. So I don't expect to have this part in the draft like this when we finally publish it as RFC.\r\n\r\nIs there anything in the issue that we need to address now? Or can we close this issue?",
+          "createdAt": "2021-10-26T10:22:53Z",
+          "updatedAt": "2021-10-26T10:22:53Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "Thanks, Mirja.\r\n\r\nThat's what I expected, but I do still think more elaboration is needed for this text to be useful. \r\n\r\nI would suggest to make this modification and leave the discussion of pros/cons to be adequately documented in Section 7:\r\n\r\nOLD:\r\n   This proposal supports the negotiation of either the use of one\r\n   packet number space for all paths or the use of separate packet\r\n   number spaces per path.  While separate packet number spaces allow\r\n   for more efficient ACK encoding, especially when paths have highly\r\n   different latencies, this approach requires the use of a connection\r\n   ID.  Therefore use of a single number space can be beneficial in\r\n   highly constrained networks that do not benefit from exposing the\r\n   connection ID in the header.  While both approaches are supported by\r\n   the specification in this version of the document, the intention for\r\n   the final publication of a multipath extension for QUIC is to choose\r\n   one option in order to avoid incompatibility.  More evaluation and\r\n   implementation experience is needed to select one approach before\r\n   final publication.  Some discussion about pros and cons can be found\r\n   here: https://github.com/mirjak/draft-lmbdhk-quic-\r\n   multipath/blob/master/presentations/PacketNumberSpace_s.pdf\r\n\r\nNEW:\r\n   This proposal supports the negotiation of either the use of one\r\n   packet number space for all paths or the use of separate packet\r\n   number spaces per path.  While both approaches are supported by\r\n   the specification in this version of the document, the intention for\r\n   the final publication of a multipath extension for QUIC is to choose\r\n   one option in order to avoid incompatibility.  More evaluation and\r\n   implementation experience is needed to select one approach before\r\n   final publication.  Some discussion about pros and cons can be found\r\n   here: https://github.com/mirjak/draft-lmbdhk-quic-\r\n   multipath/blob/master/presentations/PacketNumberSpace_s.pdf",
+          "createdAt": "2021-10-26T11:12:02Z",
+          "updatedAt": "2021-10-26T11:12:02Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "You are suggesting to strike out the sentences that try to summarize the differences, _\"While separate packet number spaces allow for more efficient ACK encoding, especially when paths have highly different latencies, this approach requires the use of a connectionID. Therefore use of a single number space can be beneficial in highly constrained networks that do not benefit from exposing the connection ID in the header.\"_\r\n\r\nI think that's a good idea. The sentences are a short summary of the arguments presented in the powerpoint, which are not limited to \"_highly constrained networks_\". For example, the Chrome browser, by default, uses NULL CID. I may be placing words in the mouth of Google developers, but I believe their goal is to reduce the overhead of the QUIC header compared to TCP/TLS. This is related to a general quest for performance, not to network constraints.",
+          "createdAt": "2021-10-26T19:04:27Z",
+          "updatedAt": "2021-10-26T19:04:27Z"
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "id": "I_kwDOGNtpaM49xL55",
+      "title": "Path Initiation",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/56",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "> When the multipath option is negotiated, clients that want to use an additional path MUST first initiate the Address Validation procedure with PATH_CHALLENGE and PATH_RESPONSE frames described in Section 8 of {{QUIC-TRANSPORT}}.\r\n\r\nThere are two cases: \r\n* the client uses a distinct source IP address and/or port number: in such case, Address validation does not make sense. \r\n* the client uses a distinct destination IP address and/or port number: I guess this is what is covered in the excerpt. If that's the case, this assumes that the client has discovered a distinct destination IP address/port number (either by some means or that the server has used these address/port).\r\n\r\nI think some elaboration is needed. ",
+      "createdAt": "2021-10-26T13:30:36Z",
+      "updatedAt": "2021-10-27T05:36:46Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is deliberately left out of the document. What we have now is a simple reference to RFC 9000 -- paths are established in exactly the same way, adding more details would just create confusion. The consensus is that we may very well want to have extensions there, more ways to find addresses, etc., and that those should be detailed in a companion RFC.",
+          "createdAt": "2021-10-26T16:00:46Z",
+          "updatedAt": "2021-10-26T16:00:46Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "I don't see a difference for those two cases. In both cases you need to validate the path and make sure both directions are reachable and that the client address is not spoofed which could otherwise be used as an attack against the spoofed address. This is what path validation does.\r\n\r\nAlso, address discovery is not considered as part of the core functionality, as Christian mentions and as the intro says, but the assumption is that if a client has an out-of band way to learn a new server IP address, it can open a new path to that address.\r\n",
+          "createdAt": "2021-10-26T16:31:36Z",
+          "updatedAt": "2021-10-26T16:31:36Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "On the other hand, in these days of geographic distribution, server farms and load balancers, \"an out-of band way to learn a new server IP address\" has to be somewhat more sophisticated than looking up a list of addresses in the DNS... But yes, if the client tries a new server address and gets it right, there is no reason the core multipath would not work.",
+          "createdAt": "2021-10-26T16:37:19Z",
+          "updatedAt": "2021-10-26T16:37:19Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "Actually \"out-of-band\" was probably the wrong. The server could tell the client about a new IP address on the application layer...",
+          "createdAt": "2021-10-26T16:53:47Z",
+          "updatedAt": "2021-10-26T16:53:47Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "> \r\n> \r\n> This is deliberately left out of the document. What we have now is a simple reference to RFC 9000 -- paths are established in exactly the same way, adding more details would just create confusion. The consensus is that we may very well want to have extensions there, more ways to find addresses, etc., and that those should be detailed in a companion RFC.\r\n\r\nThanks for the clarification. The case I'm concerned about is not the second case in my initial comment, but the first one. A client may have the knowlegde of the local addresses. I don't see how path validation from the client side applies for this case.  ",
+          "createdAt": "2021-10-27T05:36:46Z",
+          "updatedAt": "2021-10-27T05:36:46Z"
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "id": "I_kwDOGNtpaM49x6I8",
+      "title": "Use structured references to section of other documents",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/58",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "mirjak"
+      ],
+      "labels": [],
+      "body": "The draft is using old style references, such as \"section 9 of {{RFC9000}}\". Version 3 of XML2RFC defines a structure way to do that, such as: `<xref section=\"9\" sectionFormat=\"of\" target=\"RFC9000\"/>`, which can be expressed in recent versions of Markdown as `{{Section 9 of RFC9000}}`. The new style references don't change the text version much, but in the HTML rendering they generate direct references to the target section, which is nice for the readers.",
+      "createdAt": "2021-10-26T16:10:41Z",
+      "updatedAt": "2021-10-26T16:32:38Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "Sorry, that's my fault because of my local build system. Will fix this for the next revision...",
+          "createdAt": "2021-10-26T16:32:34Z",
+          "updatedAt": "2021-10-26T16:32:34Z"
+        }
+      ]
+    },
+    {
+      "number": 59,
+      "id": "I_kwDOGNtpaM49x7Kp",
+      "title": "Inconsistent use of multi-path and multipath",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/59",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "mirjak"
+      ],
+      "labels": [],
+      "body": "@boucadair flagged in his PRs that there are many places using hyphenated \"multi-path\" and many using \"multipath\". We need to fix that.",
+      "createdAt": "2021-10-26T16:14:58Z",
+      "updatedAt": "2021-10-26T16:33:46Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "This is due to the merge of the different drafts. I thought I fixed most of them, but I guess I could have done a search :-) Will do",
+          "createdAt": "2021-10-26T16:33:46Z",
+          "updatedAt": "2021-10-26T16:33:46Z"
+        }
+      ]
+    },
+    {
+      "number": 60,
+      "id": "I_kwDOGNtpaM49x7nO",
+      "title": "Lines in markdown text are too long",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/60",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There are many isntances in the markdown source where a whole paragraph is entered in a single line of text. This makes the reviewing harder, and messes up the \"what changed\" view when reviewing PRs.",
+      "createdAt": "2021-10-26T16:16:49Z",
+      "updatedAt": "2021-10-27T06:55:57Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Just to be on the same page, how should we format the text? I see two possible ways.\r\n\r\n- Hard-constraint the number of characters per line to a given limit (e.g., 80)\r\n- Make one sentence = one line\r\n\r\nI have a slight preference for option 2, but I can of course live with the other or a mix of both.",
+          "createdAt": "2021-10-27T06:21:52Z",
+          "updatedAt": "2021-10-27T06:21:52Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I would prefer something like 72 characters, because the last 8 positions are used for numbering the cards in your deck. ",
+          "createdAt": "2021-10-27T06:55:57Z",
+          "updatedAt": "2021-10-27T06:55:57Z"
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "id": "I_kwDOGNtpaM49zfQV",
+      "title": "Mixed use of ACK_MP and MP_ACK",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/61",
+      "state": "OPEN",
+      "author": "yfmascgy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In the current draft, we are having two names of multi-path ACK. I think we should stick to just one.",
+      "createdAt": "2021-10-27T02:30:42Z",
+      "updatedAt": "2021-10-27T05:00:33Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I have a slight preference for ACK_MP, on the model of ACK_ECN.",
+          "createdAt": "2021-10-27T04:43:28Z",
+          "updatedAt": "2021-10-27T04:43:28Z"
+        },
+        {
+          "author": "yfmascgy",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I submitted PR #62 to fix this.",
+          "createdAt": "2021-10-27T05:00:33Z",
+          "updatedAt": "2021-10-27T05:00:33Z"
+        }
+      ]
+    },
+    {
+      "number": 63,
+      "id": "I_kwDOGNtpaM49z2LI",
+      "title": "Add \"Path\" to the terminology section",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/63",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Consider adding this entry to the terminology section:\r\n\r\n`- Path: refers to the 4-tuple {source IP address, source port number, destination IP address, destination port number}. A path refers to \"network path\" used in {{QUIC-TRANSPORT}}.`\r\n\r\nThis also clarifies the link with \"network path\" in RFC9000.",
+      "createdAt": "2021-10-27T05:47:43Z",
+      "updatedAt": "2021-10-27T05:47:43Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 64,
+      "id": "I_kwDOGNtpaM49z3Ha",
+      "title": "Mention the exact section whenever RFC9000 is cited",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/64",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "RFC9000 is cited massively in the draft. It would be helpful to indicate to the reader where to look by indicating the section. \r\n\r\nSome change examples are provided below: \r\n```\r\n\r\nOLD:\r\n`We assume that the reader is familiar with the terminology used in {{QUIC-TRANSPORT}}.`\r\n\r\nNEW:\r\n`We assume that the reader is familiar with the terminology used in {{QUIC-TRANSPORT}} (Section 1.2, in particular).`\r\n```\r\n\r\n```\r\nOLD:\r\n`RTT measurements and PMTU discovery should be per-path (following {{QUIC-TRANSPORT}})`\r\n\r\nNEW:\r\n`RTT measurements and PMTU discovery should `be` per-path (Section 14 of {{QUIC-TRANSPORT}})`\r\n```\r\n\r\nand so on.",
+      "createdAt": "2021-10-27T05:55:15Z",
+      "updatedAt": "2021-10-27T06:22:55Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Side comment -- please see issue #58 about the use of XML2RFC v3 syntax for links.\r\n\r\nWe can do some of that, but not necessarily everywhere. We do expect that readers are familiar with QUIC V1. If we want to say \"we are just in line with QUIC V1\", then a global reference to RFC 9000 should suffice. If we want to say \"please read this text in QUIC V1, we don't want to replicate here\", then yes, we should refer to the specific section.",
+          "createdAt": "2021-10-27T06:22:55Z",
+          "updatedAt": "2021-10-27T06:22:55Z"
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "I_kwDOGNtpaM49z3aH",
+      "title": "QUIC version 1 (very minor)",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/65",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In order to be consistent with RFC9000, use \"QUIC version 1\" instead of \"QUIC v1\" through the document. \r\n\r\n\r\n\r\n",
+      "createdAt": "2021-10-27T05:57:32Z",
+      "updatedAt": "2021-10-27T05:57:32Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 66,
+      "id": "I_kwDOGNtpaM49z6Xt",
+      "title": "Handshake Negotiation",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/66",
+      "state": "OPEN",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "* Lack of the reference to Section 7.4/Section 7.4.2 of 9000 where the general handling of (new) transport parameters is discussed. \r\n\r\n* When the new transport parameter is not present, this does not necessarily mean multipath is not supported as it can be supported, but disabled (for this connection as a function of local policy). I would update this text\r\n\r\n```\r\nOLD: \r\nIf the peer does not carry the enable_multipath transport parameter, which means the peer does not\r\nsupport multipath\r\n```\r\n",
+      "createdAt": "2021-10-27T06:16:00Z",
+      "updatedAt": "2021-10-27T06:57:23Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The absence of the parameter does indeed indicate that the peer will not support multipath for this connection. But yes, the current text does not read too well. I think we should simplify and just say the same as QUIc V1, i.e. \"Transport parameters have a default value of 0 if the transport parameter is absent\". So something like:\r\n```\r\nIf the transport parameter is absent, the value 0 is assumed, i.e., no support for multipath.\r\nEndpoint MUST fallback to {{QUIC-TRANSPORT}} with single path and MUST NOT use\r\nany frame or mechanism defined in this document.\r\n```\r\n\r\n\r\n",
+          "createdAt": "2021-10-27T06:34:01Z",
+          "updatedAt": "2021-10-27T06:34:01Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The negotiation only refers to \"support for this connection\". We cannot make any statement about whether the same server might negotiate the feature in another connection attempt. There is no practical difference between \"not supported\" and \"supported, but disabled\". It could very well be for example that some server in a farm support the feature and some don't.",
+          "createdAt": "2021-10-27T06:54:05Z",
+          "updatedAt": "2021-10-27T06:54:05Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@boucadair, please review PR #67 ",
+          "createdAt": "2021-10-27T06:57:23Z",
+          "updatedAt": "2021-10-27T06:57:23Z"
+        }
+      ]
+    },
+    {
+      "number": 68,
+      "id": "I_kwDOGNtpaM490ErH",
+      "title": "Servers stop using a path",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/68",
+      "state": "CLOSED",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I wonder whether this behavior would nullify the activation of multipath in some cases (e.g., backup purposes or when MP_ACKs are not sent over the same path).  \r\n\r\n```\r\n Servers\r\n   SHOULD stop sending traffic on paths through where no non-probing\r\n   packet was received in the last 3 path RTTs, but MAY ignore that rule\r\n   if it would disqualify all available paths.\r\n```\r\n\r\nThe implication on the client should be discussed, especially that the I-D says: \r\n\r\n```\r\n   ACK_MP frame Section 10.2 can be returned via either a different\r\n   path, or the same path identified by the Path Identifier, based on\r\n   different strategies of sending ACK_MP frames.\r\n```\r\n(BTW, s/ACK_MP frame Section 10.2/ACK_MP frame (Section 10.2) ",
+      "createdAt": "2021-10-27T07:16:46Z",
+      "updatedAt": "2021-10-27T07:22:52Z",
+      "closedAt": "2021-10-27T07:22:52Z",
+      "comments": [
+        {
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think there is already issue #51 that discusses this. The idea would be to periodically trigger a PING frame when the path is \"unused\".",
+          "createdAt": "2021-10-27T07:19:37Z",
+          "updatedAt": "2021-10-27T07:19:37Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "Thanks @qdeconinck. Will move my comments there. ",
+          "createdAt": "2021-10-27T07:22:52Z",
+          "updatedAt": "2021-10-27T07:22:52Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -3617,6 +3987,299 @@
               "updatedAt": "2021-10-25T11:34:06Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "id": "PR_kwDOGNtpaM4tq_Y8",
+      "title": "Some edits to the Introduction",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/52",
+      "state": "CLOSED",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-26T09:17:17Z",
+      "updatedAt": "2021-10-27T05:33:04Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "bfbcf146e56f838687ab497466d1cb932df1adab",
+      "headRepository": "boucadair/draft-lmbdhk-quic-multipath",
+      "headRefName": "master",
+      "headRefOid": "fe3fed0d9c078643487b3ad1f4ee43f786958bd5",
+      "closedAt": "2021-10-27T05:33:04Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vD2kN",
+          "commit": {
+            "abbreviatedOid": "fe3fed0"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "I don't think we should approve this proposal. I have questions about both the specifics and the process. On the specific, the changes are a mix of suggested rewrite for clarity and subtle deviations from the original intent. The clarity part is a matter of taste; the subtle deviations need discussion.\r\n\r\nAnd thus, to process. Since the DPRIVE WG has not adopted a fully GitHub based process, the preferred method for requesting changes is by having a discussion on the WG mailing list. If we did adopt a GitHub based process, we should probably first migrate this depot to an IETF managed account. Then, we should make clear that discussions should start by opening an issue, not a pull request. Issues allow presentation of the problem before text changes and the archival of those discussions, pull requests are not designed for that. They should come later, when the issue has outlined a consensus for change.",
+          "createdAt": "2021-10-26T15:04:54Z",
+          "updatedAt": "2021-10-26T15:17:53Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "I don't think we should mention scenarios like resource pooling in the introduction. I also don't think we should use loaded language like \"not optimal\". I like the original writing better.",
+              "createdAt": "2021-10-26T15:04:54Z",
+              "updatedAt": "2021-10-26T15:17:53Z"
+            },
+            {
+              "originalPosition": 32,
+              "body": "This is the introduction, I don't think we need detailed quotes of QUIC section. If we do, however, we need to adopt the quoting format of XML2RFC v3.",
+              "createdAt": "2021-10-26T15:07:06Z",
+              "updatedAt": "2021-10-26T15:17:53Z"
+            },
+            {
+              "originalPosition": 35,
+              "body": "No. WE are indeed speaking of path management in QUIC V1, including functions like path validation.",
+              "createdAt": "2021-10-26T15:08:01Z",
+              "updatedAt": "2021-10-26T15:17:53Z"
+            },
+            {
+              "originalPosition": 47,
+              "body": "No. The packet number is also used in path that are not active.",
+              "createdAt": "2021-10-26T15:09:32Z",
+              "updatedAt": "2021-10-26T15:17:53Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "id": "PR_kwDOGNtpaM4trE70",
+      "title": "Update the terminology section",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/54",
+      "state": "CLOSED",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Add an entry for \"path\" and some minor tweaks.",
+      "createdAt": "2021-10-26T09:43:19Z",
+      "updatedAt": "2021-10-27T05:33:14Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "bfbcf146e56f838687ab497466d1cb932df1adab",
+      "headRepository": "boucadair/draft-lmbdhk-quic-multipath",
+      "headRefName": "patch-1",
+      "headRefOid": "d2f399fe78f0c440bed46984f6f9423aca502929",
+      "closedAt": "2021-10-27T05:33:14Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vD8Jy",
+          "commit": {
+            "abbreviatedOid": "d2f399f"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Same comments as Pr #52. This is not the right process. Please open an issue or have a discussion on the mailing list.",
+          "createdAt": "2021-10-26T15:21:26Z",
+          "updatedAt": "2021-10-26T15:21:26Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "id": "PR_kwDOGNtpaM4trzIL",
+      "title": "Handshake Section",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/55",
+      "state": "CLOSED",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-26T13:18:26Z",
+      "updatedAt": "2021-10-27T05:32:52Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "bfbcf146e56f838687ab497466d1cb932df1adab",
+      "headRepository": "boucadair/draft-lmbdhk-quic-multipath",
+      "headRefName": "patch-2",
+      "headRefOid": "0d9e002752f3f4453e7dd5a8ae846217555be24f",
+      "closedAt": "2021-10-27T05:32:52Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vD7qP",
+          "commit": {
+            "abbreviatedOid": "0d9e002"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "See comments on the other PR for the introduction session. This is not the right process. Please have the discussion on the mailing list first, or submit an issue to discuss specific problems.",
+          "createdAt": "2021-10-26T15:19:52Z",
+          "updatedAt": "2021-10-26T15:19:52Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "id": "PR_kwDOGNtpaM4tr7aN",
+      "title": "Edits to \"Path Setup and Removal\" Section",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/57",
+      "state": "CLOSED",
+      "author": "boucadair",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-10-26T13:51:37Z",
+      "updatedAt": "2021-10-27T05:32:41Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "bfbcf146e56f838687ab497466d1cb932df1adab",
+      "headRepository": "boucadair/draft-lmbdhk-quic-multipath",
+      "headRefName": "patch-3",
+      "headRefOid": "d9e890d458357185dc75379ef9e1c46a4634b327",
+      "closedAt": "2021-10-27T05:32:40Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vD9yF",
+          "commit": {
+            "abbreviatedOid": "d9e890d"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "As noted in the comments on PR #52 the changes mix some efforts at clarity and some subtle deviations from the consensus. Submitting a PR is NOT the proper process. Start with a discussion on the mailing list or open issues. I think there are valid issues here, such as inconsistent writing of \"multipath\" and \"multi-path\", or the formatting of section references, but these should be treated as specific issues, rather than intermingled with other changes.",
+          "createdAt": "2021-10-26T15:26:23Z",
+          "updatedAt": "2021-10-26T15:26:23Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 62,
+      "id": "PR_kwDOGNtpaM4tuCed",
+      "title": "change MP_ACK to ACK_MP so that the name is unified",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/62",
+      "state": "MERGED",
+      "author": "yfmascgy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This should be a simple fix. There was only one place where MP_ACK appeared.",
+      "createdAt": "2021-10-27T04:58:48Z",
+      "updatedAt": "2021-10-27T06:05:30Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "bfbcf146e56f838687ab497466d1cb932df1adab",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/one-ack-name",
+      "headRefOid": "1282b5f9447da92479bf41388dc14c2ad99fc4b4",
+      "closedAt": "2021-10-27T06:05:30Z",
+      "mergedAt": "2021-10-27T06:05:30Z",
+      "mergedBy": "qdeconinck",
+      "mergeCommit": {
+        "oid": "fd89c897a10bc57f1150df180d0e6348e5ed439c"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vGNGl",
+          "commit": {
+            "abbreviatedOid": "ca3b5c1"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "I added changes of the tag \"mp-ack-frame\" to \"ack-mp-frame\" for consistency...",
+          "createdAt": "2021-10-27T05:10:10Z",
+          "updatedAt": "2021-10-27T05:10:10Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vGUEN",
+          "commit": {
+            "abbreviatedOid": "1282b5f"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-27T06:05:18Z",
+          "updatedAt": "2021-10-27T06:05:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDOGNtpaM4tuOlq",
+      "title": "Improve text in handshake negotiation",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/67",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Close #66 \r\n",
+      "createdAt": "2021-10-27T06:43:19Z",
+      "updatedAt": "2021-10-27T06:56:29Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "fd89c897a10bc57f1150df180d0e6348e5ed439c",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "clarify-handshake-nego",
+      "headRefOid": "19a58c649413a6c2eacaef9e2136acad2a1d890f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vGauE",
+          "commit": {
+            "abbreviatedOid": "19a58c6"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-27T06:45:18Z",
+          "updatedAt": "2021-10-27T06:45:18Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vGc4V",
+          "commit": {
+            "abbreviatedOid": "19a58c6"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-27T06:56:29Z",
+          "updatedAt": "2021-10-27T06:56:29Z",
+          "comments": []
         }
       ]
     }
