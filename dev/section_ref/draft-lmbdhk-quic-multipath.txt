@@ -128,9 +128,9 @@ Table of Contents
       address as well as source and destination port.  Therefore there
       can be at most one active paths/connection ID per 4-tuple.
 
-   The path management specified in Section 9 of [RFC9000] fulfills
-   multiple goals: it directs a peer to switch sending through a new
-   preferred path, and it allows the peer to release resources
+   The path management specified in Section 9 of [QUIC-TRANSPORT]
+   fulfills multiple goals: it directs a peer to switch sending through
+   a new preferred path, and it allows the peer to release resources
    associated with the old path.  Multipath requires several changes to
    that mechanism:
 
@@ -143,8 +143,8 @@ Table of Contents
    *  Manage the removal of paths that have been abandoned.
 
    As such this extension specifies a departure from the specification
-   of path management in Section 9 of [RFC9000] and therefore requires
-   negotiation between the two endpoints using a new transport
+   of path management in Section 9 of [QUIC-TRANSPORT] and therefore
+   requires negotiation between the two endpoints using a new transport
    parameter, as specified in Section 2.
 
    This proposal supports the negotiation of either the use of one
@@ -284,16 +284,16 @@ Table of Contents
    When the multipath option is negotiated, clients that want to use an
    additional path MUST first initiate the Address Validation procedure
    with PATH_CHALLENGE and PATH_RESPONSE frames described in Section 8
-   of [RFC9000].  After receiving packets from the client on the new
-   paths, the servers MAY in turn attempt to validate these paths using
-   the same mechanisms.
+   of [QUIC-TRANSPORT].  After receiving packets from the client on the
+   new paths, the servers MAY in turn attempt to validate these paths
+   using the same mechanisms.
 
    If validation succeed, the client can send non-probing, 1-RTT packets
    on the new paths.  In contrast with the specification in Section 9 of
-   [RFC9000], the server MUST NOT assume that receiving non-probing
-   packets on a new path indicates an attempt to migrate to that path.
-   Instead, servers SHOULD consider new paths over which non-probing
-   packets have been received as available for transmission.
+   [QUIC-TRANSPORT], the server MUST NOT assume that receiving non-
+   probing packets on a new path indicates an attempt to migrate to that
+   path.  Instead, servers SHOULD consider new paths over which non-
+   probing packets have been received as available for transmission.
 
 3.2.  Path Close
 
@@ -392,8 +392,8 @@ Table of Contents
    received for a sufficiently long path-idle delay, but SHOULD only
    release resource for the last available path if no traffic is
    received for the duration of the idle timeout, as specified in
-   Section 10.1 of [RFC9000].  This means if all paths remain idle for
-   the idle timeout, the connection is implicitly closed.
+   Section 10.1 of [QUIC-TRANSPORT].  This means if all paths remain
+   idle for the idle timeout, the connection is implicitly closed.
 
    Server implementations need to select the sub-path idle timeout as a
    trade- off between keeping resources, such as connection IDs, in use
@@ -457,8 +457,8 @@ Table of Contents
       packets over the path.
 
    A path in the "Validating" state performs path validation as
-   described in Section 8.2 of [RFC9000].  An endhost should not send
-   non-probing frames on a path in "Validating" state, as it has no
+   described in Section 8.2 of [QUIC-TRANSPORT].  An endhost should not
+   send non-probing frames on a path in "Validating" state, as it has no
    guarantee that packets will actually reach the peer.
 
    The endhost can use all the paths in the "Active" state, provided
@@ -569,13 +569,13 @@ Table of Contents
    also tracked and processed with the path ID 0.  For 1-RTT packets the
    path ID is the sequence number of the Destination Connection ID
    present in the packet header, as defined in Section 5.1.1 of
-   [RFC9000], or also 0 if the Connection ID is zero-length.
+   [QUIC-TRANSPORT], or also 0 if the Connection ID is zero-length.
 
    If non-zero-length Connection IDs are used, an endpoint MUST use
    different Connection IDs on different paths.  Still, the receiver may
    observe the same Connection ID used on different 4-tuples due to,
    e.g., NAT rebinding.  In such case, the receiver reacts as specified
-   in Section 9.3 of [RFC9000].
+   in Section 9.3 of [QUIC-TRANSPORT].
 
    Acknowledgements of Initial and Handshake packets MUST be carried
    using ACK frames, as specified in [QUIC-TRANSPORT].  The ACK frames,
@@ -676,14 +676,14 @@ Table of Contents
 7.2.1.  Packet Protection for QUIC Multipath
 
    Packet protection for QUIC version 1 is specified is Section 5 of
-   [RFC9001].  The general principles of packet protection are not
+   [QUIC-TLS].  The general principles of packet protection are not
    changed for QUIC Multipath.  No changes are needed for setting packet
    protection keys, initial secrets, header protection, use of 0-RTT
    keys, receiving out-of-order protected packets, receiving protected
    packets, or retry packet integrity.  However, the use of multiple
    number spaces for 1-RTT packets requires changes in AEAD usage.
 
-   Section 5.3 of [RFC9001] specifies AEAD usage, and in particular the
+   Section 5.3 of [QUIC-TLS] specifies AEAD usage, and in particular the
    use of a nonce, N, formed by combining the packet protection IV with
    the packet number.  If multiple packet number spaces are used, the
    packet number alone would not guarantee the uniqueness of the nonce.
@@ -694,10 +694,10 @@ Table of Contents
 
    The path ID for 1-RTT packets is the sequence number of of
    [QUIC-TRANSPORT], or zero if the Connection ID is zero-length.
-   Section 19 of [RFC9000] encodes the Connection ID Sequence Number as
-   a variable-length integer, allowing values up to 2^62-1; in this
-   specification a range of less than 2^32-1 values MUST be used before
-   updating the packet protection key.
+   Section 19 of [QUIC-TRANSPORT] encodes the Connection ID Sequence
+   Number as a variable-length integer, allowing values up to 2^62-1; in
+   this specification a range of less than 2^32-1 values MUST be used
+   before updating the packet protection key.
 
    To calculate the nonce, a 96 bit path-and-packet-number is composed
    of the 32 bit Connection ID Sequence Number in byte order, two zero
@@ -714,8 +714,8 @@ Table of Contents
 7.2.2.  Key Update for QUIC Multipath
 
    The Key Phase bit update process for QUIC version 1 is specified in
-   Section 6 of [RFC9001].  The general principles of key update are not
-   changed in this specification.  Following QUIC version 1, the Key
+   Section 6 of [QUIC-TLS].  The general principles of key update are
+   not changed in this specification.  Following QUIC version 1, the Key
    Phase bit is used to indicate which packet protection keys are used
    to protect the packet.  The Key Phase bit is toggled to signal each
    subsequent key update.  Because of network delays, packets protected
@@ -746,7 +746,7 @@ Table of Contents
    subsequent key update until a packet with the current key has been
    acknowledged on each path.
 
-   Following Section 5.4 of [RFC9001], the Key Phase bit is protected,
+   Following Section 5.4 of [QUIC-TLS], the Key Phase bit is protected,
    so sending multiple packets with Key Phase bit flipping at the same
    time should not cause linkability issue.
 
@@ -1070,15 +1070,6 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
-
-   [RFC9000]  Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
-              Multiplexed and Secure Transport", RFC 9000,
-              DOI 10.17487/RFC9000, May 2021,
-              <https://datatracker.ietf.org/doc/html/rfc9000>.
-
-   [RFC9001]  Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
-              QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
-              <https://datatracker.ietf.org/doc/html/rfc9001>.
 
 16.2.  Informative References
 

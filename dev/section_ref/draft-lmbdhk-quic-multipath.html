@@ -1306,7 +1306,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
         <li class="normal" id="section-1-3.4">A path is determined by the 4-tuple of source and destination IP address as well as source and destination port. Therefore there can be at most one active paths/connection ID per 4-tuple.<a href="#section-1-3.4" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-1-4">The path management specified in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span> fulfills multiple goals: it directs a peer to switch sending through a new preferred path, and it allows the peer to release resources associated with the old path. Multipath requires several changes to that mechanism:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">The path management specified in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> fulfills multiple goals: it directs a peer to switch sending through a new preferred path, and it allows the peer to release resources associated with the old path. Multipath requires several changes to that mechanism:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-5.1">Allow simultaneous transmission of non probing frames on multiple paths.<a href="#section-1-5.1" class="pilcrow">¶</a>
 </li>
@@ -1315,7 +1315,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
         <li class="normal" id="section-1-5.3">Manage the removal of paths that have been abandoned.<a href="#section-1-5.3" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-1-6">As such this extension specifies a departure from the specification of path management in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span> and therefore requires negotiation between the two endpoints using a new transport parameter, as specified in <a href="#nego" class="xref">Section 2</a>.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-6">As such this extension specifies a departure from the specification of path management in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> and therefore requires negotiation between the two endpoints using a new transport parameter, as specified in <a href="#nego" class="xref">Section 2</a>.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1-7">This proposal supports the negotiation of either the use of one packet number space for all paths or the use of separate packet number spaces per path. While separate packet number spaces allow for more efficient ACK encoding, especially when paths have highly different latencies, this approach requires the use of a connection ID. Therefore use of a single number space can be beneficial in highly constrained networks that do not benefit from exposing the connection ID in the header. While both approaches are supported by the specification in this version of the document, the intention for the final publication of a multipath extension for QUIC is to choose one option in order to avoid incompatibility. More evaluation and implementation experience is needed to select one approach before final publication. Some discussion about pros and cons can be found here:
 https://github.com/mirjak/draft-lmbdhk-quic-multipath/blob/master/presentations/PacketNumberSpace_s.pdf<a href="#section-1-7" class="pilcrow">¶</a></p>
 <p id="section-1-8">As currently defined in this version of the draft the use of multiple packet number spaces requires the use of connection IDs is both directions. Today's deployments often only use destination connection ID when sending packets from the client to the server as this addresses the most important use cases for migration, like NAT rebinding or mobility events. Further discussion and work is required to evaluate if the use of multiple packet number spaces could be supported as well when the connection ID is only present in one direction.<a href="#section-1-8" class="pilcrow">¶</a></p>
@@ -1435,11 +1435,11 @@ Connection IDs, and also limits the number of concurrent paths. For the QUIC mul
         </h3>
 <p id="section-3.1-1">When the multipath option is negotiated, clients that want to use an additional
 path MUST first initiate the Address Validation procedure with PATH_CHALLENGE and PATH_RESPONSE
-frames described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-8" class="relref">Section 8</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>. After
+frames described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-8" class="relref">Section 8</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>. After
 receiving packets from the client on the new paths, the servers MAY
 in turn attempt to validate these paths using the same mechanisms.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">If validation succeed, the client can send non-probing, 1-RTT packets on the new paths.  In
-contrast with the specification in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>, the
+contrast with the specification in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, the
 server MUST NOT assume that receiving non-probing packets on a new
 path indicates an attempt to migrate to that path.  Instead, servers
 SHOULD consider new paths over which non-probing packets have been received as
@@ -1525,7 +1525,7 @@ paths.  Server MAY release the resource associated with paths for
 which no non-probing packet was received for a sufficiently long
 path-idle delay, but SHOULD only release resource for the last
 available path if no traffic is received for the duration of the idle
-timeout, as specified in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-10.1" class="relref">Section 10.1</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>.
+timeout, as specified in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-10.1" class="relref">Section 10.1</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.
 This means if all paths remain idle for the idle timeout, the connection
 is implicitly closed.<a href="#section-3.2.3-2" class="pilcrow">¶</a></p>
 <p id="section-3.2.3-3">Server implementations need to select the sub-path idle timeout as a trade-
@@ -1597,7 +1597,7 @@ Packet number considerations described in <span>[<a href="#QUIC-TRANSPORT" class
 <li class="normal" id="section-3.3-8.1">Associated Source Connection ID: The Connection ID used to receive packets over the path.<a href="#section-3.3-8.1" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-3.3-9">A path in the "Validating" state performs path validation as described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-8.2" class="relref">Section 8.2</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>.
+<p id="section-3.3-9">A path in the "Validating" state performs path validation as described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-8.2" class="relref">Section 8.2</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.
 An endhost should not send non-probing frames on a path in "Validating" state, as it has no guarantee that packets
 will actually reach the peer.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
 <p id="section-3.3-10">The endhost can use all the paths in the "Active" state, provided that the congestion control and flow control currently allow sending of new data on a path.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
@@ -1713,11 +1713,11 @@ If no connection ID is present, the 4 tuple identifies the path.
 The initial path that is used during the handshake (and multipath negotiation) has the path ID 0 and therefore
 all 0-RTT packets are also tracked and processed with the path ID 0.
 For 1-RTT packets the path ID is the sequence number of
-the Destination Connection ID present in the packet header, as defined in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-5.1.1" class="relref">Section 5.1.1</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>, or also 0 if the Connection ID is zero-length.<a href="#section-7-1" class="pilcrow">¶</a></p>
+the Destination Connection ID present in the packet header, as defined in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-5.1.1" class="relref">Section 5.1.1</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, or also 0 if the Connection ID is zero-length.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">If non-zero-length Connection IDs are used, an endpoint MUST use different Connection IDs on different paths.
 Still, the receiver may observe the same Connection ID used on different 4-tuples
 due to, e.g., NAT rebinding. In such case, the receiver reacts as specified in
-<span><a href="https://rfc-editor.org/rfc/rfc9000#section-9.3" class="relref">Section 9.3</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<span><a href="https://rfc-editor.org/rfc/rfc9000#section-9.3" class="relref">Section 9.3</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.<a href="#section-7-2" class="pilcrow">¶</a></p>
 <p id="section-7-3">Acknowledgements of Initial and Handshake packets MUST be carried using ACK frames, as specified in <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.
 The ACK frames, as defined in <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, do not carry path identifiers. If for any reason ACK frames are
 received in 1-RTT packets while the state of multipath negotiation is ambiguous, they MUST be interpreted as acknowledging
@@ -1807,13 +1807,13 @@ updates, as explained in <a href="#multipath-key-update" class="xref">Section 7.
           <h4 id="name-packet-protection-for-quic-">
 <a href="#section-7.2.1" class="section-number selfRef">7.2.1. </a><a href="#name-packet-protection-for-quic-" class="section-name selfRef">Packet Protection for QUIC Multipath</a>
           </h4>
-<p id="section-7.2.1-1">Packet protection for QUIC version 1 is specified is <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5" class="relref">Section 5</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span>. The general principles
+<p id="section-7.2.1-1">Packet protection for QUIC version 1 is specified is <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5" class="relref">Section 5</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>. The general principles
 of packet protection are not changed for QUIC Multipath. No changes are needed for setting
 packet protection keys, initial secrets, header protection, use of 0-RTT keys, receiving
 out-of-order protected packets, receiving protected packets,
 or retry packet integrity. However, the use of multiple
 number spaces for 1-RTT packets requires changes in AEAD usage.<a href="#section-7.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.2.1-2"><span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.3" class="relref">Section 5.3</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span> specifies AEAD usage, and in particular the use of a
+<p id="section-7.2.1-2"><span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.3" class="relref">Section 5.3</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> specifies AEAD usage, and in particular the use of a
 nonce, N, formed by combining the packet protection IV with the packet number. If
 multiple packet number spaces are used, the packet number alone would
 not guarantee the uniqueness of the nonce.<a href="#section-7.2.1-2" class="pilcrow">¶</a></p>
@@ -1822,7 +1822,7 @@ combining the packet protection IV with the packet number
 and with the path identifier.<a href="#section-7.2.1-3" class="pilcrow">¶</a></p>
 <p id="section-7.2.1-4">The path ID for 1-RTT packets is the sequence number of
 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, or zero if the Connection ID is zero-length.
-<span><a href="https://rfc-editor.org/rfc/rfc9000#section-19" class="relref">Section 19</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span> encodes the Connection ID Sequence Number as a variable-length integer,
+<span><a href="https://rfc-editor.org/rfc/rfc9000#section-19" class="relref">Section 19</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> encodes the Connection ID Sequence Number as a variable-length integer,
 allowing values up to 2^62-1; in this specification a range of less than 2^32-1
 values MUST be used before updating the packet protection key.<a href="#section-7.2.1-4" class="pilcrow">¶</a></p>
 <p id="section-7.2.1-5">To calculate the nonce, a 96 bit
@@ -1840,7 +1840,7 @@ number is <code>3</code>, and the packet number is <code>aead</code>, the nonce 
           <h4 id="name-key-update-for-quic-multipa">
 <a href="#section-7.2.2" class="section-number selfRef">7.2.2. </a><a href="#name-key-update-for-quic-multipa" class="section-name selfRef">Key Update for QUIC Multipath</a>
           </h4>
-<p id="section-7.2.2-1">The Key Phase bit update process for QUIC version 1 is specified in <span><a href="https://rfc-editor.org/rfc/rfc9001#section-6" class="relref">Section 6</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span>.
+<p id="section-7.2.2-1">The Key Phase bit update process for QUIC version 1 is specified in <span><a href="https://rfc-editor.org/rfc/rfc9001#section-6" class="relref">Section 6</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>.
 The general principles of key update are not changed in this
 specification. Following QUIC version 1, the Key Phase bit is used to indicate which
 packet protection keys are used to protect the packet. The Key Phase bit is
@@ -1867,7 +1867,7 @@ initialized on one path, the sender SHOULD send at least one packet with the new
 key on all active paths. Further, an
 endpoint MUST NOT initiate a subsequent key update until a packet with the
 current key has been acknowledged on each path.<a href="#section-7.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2.2-4">Following <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.4" class="relref">Section 5.4</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span>, the Key Phase bit is protected, so
+<p id="section-7.2.2-4">Following <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.4" class="relref">Section 5.4</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>, the Key Phase bit is protected, so
 sending multiple packets with Key Phase bit flipping at the same time should
 not cause linkability issue.<a href="#section-7.2.2-4" class="pilcrow">¶</a></p>
 </section>
@@ -2298,16 +2298,8 @@ Further contributors that were also involved one of the original proposals are:<
 <span class="refAuthor">Yergeau, F.</span>, <span class="refTitle">"UTF-8, a transformation format of ISO 10646"</span>, <span class="seriesInfo">STD 63</span>, <span class="seriesInfo">RFC 3629</span>, <span class="seriesInfo">DOI 10.17487/RFC3629</span>, <time datetime="2003-11" class="refDate">November 2003</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc3629">https://datatracker.ietf.org/doc/html/rfc3629</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-        <dd>
-<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8174">https://datatracker.ietf.org/doc/html/rfc8174</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC9000">[RFC9000]</dt>
-        <dd>
-<span class="refAuthor">Iyengar, J., Ed.</span> and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="seriesInfo">RFC 9000</span>, <span class="seriesInfo">DOI 10.17487/RFC9000</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc9000">https://datatracker.ietf.org/doc/html/rfc9000</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC9001">[RFC9001]</dt>
       <dd>
-<span class="refAuthor">Thomson, M., Ed.</span> and <span class="refAuthor">S. Turner, Ed.</span>, <span class="refTitle">"Using TLS to Secure QUIC"</span>, <span class="seriesInfo">RFC 9001</span>, <span class="seriesInfo">DOI 10.17487/RFC9001</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc9001">https://datatracker.ietf.org/doc/html/rfc9001</a>&gt;</span>. </dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8174">https://datatracker.ietf.org/doc/html/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
