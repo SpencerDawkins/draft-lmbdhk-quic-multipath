@@ -5,14 +5,14 @@
 QUIC Working Group                                                Y. Liu
 Internet-Draft                                                     Y. Ma
 Intended status: Standards Track                            Alibaba Inc.
-Expires: 30 April 2022                                     Q. De Coninck
+Expires: 1 May 2022                                        Q. De Coninck
                                                           O. Bonaventure
                                                                UCLouvain
                                                               C. Huitema
                                                     Private Octopus Inc.
                                                       M. Kuehlewind, Ed.
                                                                 Ericsson
-                                                         27 October 2021
+                                                         28 October 2021
 
 
                       Multipath Extension for QUIC
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 April 2022.
+   This Internet-Draft will expire on 1 May 2022.
 
 Copyright Notice
 
@@ -226,9 +226,11 @@ Table of Contents
 
    *  name: enable_multipath (TBD - experiments use 0xbabf)
 
-   *  value: 0 (default) for disabled.  Endpoints use 2-bits in the
-      value field for negotiating one or more PN spaces, available
-      option value for client and server are listed in Table 1 :
+   *  value: 0 (default) for disabled.
+
+   Endpoints use 2-bits in the value field for negotiating one or more
+   PN spaces, available option value for client and server are listed in
+   Table 1 :
 
       +===============+===========================+================+
       | Client Option | Definition                | Allowed server |
@@ -248,13 +250,13 @@ Table of Contents
 
               Table 1: Available value for enable_multipath
 
-   If the peer does not carry the enable_multipath transport parameter,
-   which means the peer does not support multipath, endpoint MUST
-   fallback to [QUIC-TRANSPORT] with single path and MUST NOT use any
-   frame or mechanism defined in this document.  If endpoint receives
-   unexpected value for the transport parameter "enable_multipath", it
-   MUST treat this as a connection error of type MP_CONNECTION_ERROR and
-   close the connection.
+   If the parameter is absent or set to 0, the endpoints MUST fallback
+   to [QUIC-TRANSPORT] with single path and MUST NOT use any frame or
+   mechanism defined in this document.
+
+   If endpoint receives unexpected value for the transport parameter
+   "enable_multipath", it MUST treat this as a connection error of type
+   MP_CONNECTION_ERROR and close the connection.
 
    Note that the transport parameter "active_connection_id_limit"
    [QUIC-TRANSPORT] limits the number of usable Connection IDs, and also
