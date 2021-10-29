@@ -5,14 +5,14 @@
 QUIC Working Group                                                Y. Liu
 Internet-Draft                                                     Y. Ma
 Intended status: Standards Track                            Alibaba Inc.
-Expires: 1 May 2022                                        Q. De Coninck
+Expires: 2 May 2022                                        Q. De Coninck
                                                           O. Bonaventure
                                                                UCLouvain
                                                               C. Huitema
                                                     Private Octopus Inc.
                                                       M. Kuehlewind, Ed.
                                                                 Ericsson
-                                                         28 October 2021
+                                                         29 October 2021
 
 
                       Multipath Extension for QUIC
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2022.
+   This Internet-Draft will expire on 2 May 2022.
 
 Copyright Notice
 
@@ -128,7 +128,7 @@ Table of Contents
       address as well as source and destination port.  Therefore there
       can be at most one active paths/connection ID per 4-tuple.
 
-   The path management specified in section 9 of [QUIC-TRANSPORT]
+   The path management specified in Section 9 of [QUIC-TRANSPORT]
    fulfills multiple goals: it directs a peer to switch sending through
    a new preferred path, and it allows the peer to release resources
    associated with the old path.  Multipath requires several changes to
@@ -143,7 +143,7 @@ Table of Contents
    *  Manage the removal of paths that have been abandoned.
 
    As such this extension specifies a departure from the specification
-   of path management in section 9 of [QUIC-TRANSPORT] and therefore
+   of path management in Section 9 of [QUIC-TRANSPORT] and therefore
    requires negotiation between the two endpoints using a new transport
    parameter, as specified in Section 2.
 
@@ -289,7 +289,7 @@ Table of Contents
    using the same mechanisms.
 
    If validation succeed, the client can send non-probing, 1-RTT packets
-   on the new paths.  In contrast with the specification in section 9 of
+   on the new paths.  In contrast with the specification in Section 9 of
    [QUIC-TRANSPORT], the server MUST NOT assume that receiving non-
    probing packets on a new path indicates an attempt to migrate to that
    path.  Instead, servers SHOULD consider new paths over which non-
@@ -392,7 +392,7 @@ Table of Contents
    received for a sufficiently long path-idle delay, but SHOULD only
    release resource for the last available path if no traffic is
    received for the duration of the idle timeout, as specified in
-   section 10.1 of [QUIC-TRANSPORT].  This means if all paths remain
+   Section 10.1 of [QUIC-TRANSPORT].  This means if all paths remain
    idle for the idle timeout, the connection is implicitly closed.
 
    Server implementations need to select the sub-path idle timeout as a
