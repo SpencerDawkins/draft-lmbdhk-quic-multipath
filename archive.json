@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-28T00:29:44.223224+00:00",
+  "timestamp": "2021-10-31T00:31:00.204258+00:00",
   "repo": "mirjak/draft-lmbdhk-quic-multipath",
   "labels": [
     {
@@ -1076,7 +1076,7 @@
       ],
       "body": "The current draft says that \"Servers SHOULD stop sending traffic on paths through where no non-probing packet was received in the last 3 path RTTs\". However, it is possible that only a few data was generated in the past few RTTs due to app-limit conditions, and as a result, only one path was used. So I think, in section 3.2.3, we should suggest the use of some keep-alive mechanisms such as sending ping frames on a particular path if one is interested in keeping that path alive. Let me know what you think?",
       "createdAt": "2021-10-26T08:06:33Z",
-      "updatedAt": "2021-10-27T15:47:13Z",
+      "updatedAt": "2021-10-28T13:18:47Z",
       "closedAt": null,
       "comments": [
         {
@@ -1092,6 +1092,62 @@
           "body": "Med, I am not sure that I understand the scenario that you are describing. There is a router R balancing the load over two paths, and using some NAT like functionality to rewrite the client source address, and presumably the client's port number. This is not supported by either RFC 9000 or by our multipath draft.\r\n\r\nThe server will likely treat arrival from @1 and @2 as NAT rebinding, and the connection will end up using a single path. \r\n\r\n\r\n",
           "createdAt": "2021-10-27T15:47:12Z",
           "updatedAt": "2021-10-27T15:47:12Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "R is multi-homed with PA (Provider Assigned) mode . In such mode, R uses the appropriate source IP address when forwarding packets over a given network attachment. \r\n\r\nWith RFC9000, and depending on the distribution logic used by R (per packet, per flow, round robin, maximize bw usage, RTT-based optimization, ...), there will be a path oscillation for this connection as the server will keep proceeding with path migrations each time it sees a new address (@1, @2, @1, and so on). \r\n\r\nNow, if both the client and server negotiates multipath, we don't have anymore this oscillation and the connection will use more resources. However, prematurely closing the connection nullifies the benefits of using multipath.\r\n\r\n\r\n\r\n\r\n",
+          "createdAt": "2021-10-28T05:32:14Z",
+          "updatedAt": "2021-10-28T05:32:14Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Actually, we will still have oscillation even if the endpoints negotiate multipath. There is not difference of behavior with RFC 9000 here, this scenario will be processed as NAT rebinding.\r\n\r\nThis is not a supported scenario. QUIC is an end to end protocol. Intermediate routers cannot really tell whether the endpoints are supporting multipath, and should not depend on that. For that scenario to work, the alternate addresses @1 and @2 should be somehow managed by the client, and the client should be able to steer traffic towards one or the other.\r\n",
+          "createdAt": "2021-10-28T06:17:55Z",
+          "updatedAt": "2021-10-28T06:17:55Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "> This is not a supported scenario. QUIC is an end to end protocol. Intermediate routers cannot really tell whether the endpoints are supporting multipath, and should not depend on that.\r\n\r\nSure, the connection is end-to-end. The intermediate routers **do not * interfere with the connection. However, an endpoint can still discover the availability of multiple paths (there are plenty mechanisms out there to discover the external IP addresses).\r\n\r\nEven without a discovery mechanism, many service offerings already allow controlling how flows are bound to external links (including bonding). Think about SDWAN, for example. These policies are configured on the CE router. \r\n\r\nIf this scenario is not supported in this version of the protocol, there should be an applicability section where the target deployments are called out. Some text may be considered to discuss concretely when the client can negotiate multipath activation based on that applicability. \r\n\r\nBack to the initial issue, I think that more motivation is needed to justify withdrawing a path too prematurely. \r\n\r\n\r\n",
+          "createdAt": "2021-10-28T06:51:26Z",
+          "updatedAt": "2021-10-28T06:51:26Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The middlebox design that you describe closely resembles address spoofing attacks against QUIC that we discussed and tried to mitigate during the design, so it is no surprise that QUIC does not really support it. It would also break TCP connections, which means it is probably not deployed yet. My advice would be to not try deploy that.",
+          "createdAt": "2021-10-28T12:41:42Z",
+          "updatedAt": "2021-10-28T12:42:08Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "It is deployed in (MP)TCP, but requires another proxy to glue the two connections and hide them to the sever. \r\n\r\nIn QUIC, we can have a much more cleaner design as the router does not have to interfere with the connection  + we avoid the second proxy. \r\n\r\nThat's said, I'm not pushing to have this included. We just need to be clear about the applicability scope.  \r\n",
+          "createdAt": "2021-10-28T12:50:10Z",
+          "updatedAt": "2021-10-28T12:50:10Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "By default, the applicability scope is the same as QUIC version 1.",
+          "createdAt": "2021-10-28T12:55:05Z",
+          "updatedAt": "2021-10-28T12:55:05Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "By default, the applicability scope is the same as QUIC version 1.",
+          "createdAt": "2021-10-28T12:55:12Z",
+          "updatedAt": "2021-10-28T12:55:12Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "> By default, the applicability scope is the same as QUIC version 1.\r\n\r\nMaybe, but I think having an architecture figure to illustrate the basic multipath case that is covered would be helpful. \r\n\r\nBTW, there is nothing in the current design that prevents multipath QUIC to be established over the scenario we discussed. I admit this is a side effect, not a desired goal. \r\n\r\n\r\n\r\n\r\n",
+          "createdAt": "2021-10-28T13:18:47Z",
+          "updatedAt": "2021-10-28T13:18:47Z"
         }
       ]
     },
@@ -1190,17 +1246,19 @@
       "id": "I_kwDOGNtpaM49x6I8",
       "title": "Use structured references to section of other documents",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/58",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "huitema",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
         "mirjak"
       ],
-      "labels": [],
+      "labels": [
+        "has PR"
+      ],
       "body": "The draft is using old style references, such as \"section 9 of {{RFC9000}}\". Version 3 of XML2RFC defines a structure way to do that, such as: `<xref section=\"9\" sectionFormat=\"of\" target=\"RFC9000\"/>`, which can be expressed in recent versions of Markdown as `{{Section 9 of RFC9000}}`. The new style references don't change the text version much, but in the HTML rendering they generate direct references to the target section, which is nice for the readers.",
       "createdAt": "2021-10-26T16:10:41Z",
-      "updatedAt": "2021-10-26T16:32:38Z",
-      "closedAt": null,
+      "updatedAt": "2021-10-29T15:00:05Z",
+      "closedAt": "2021-10-29T15:00:05Z",
       "comments": [
         {
           "author": "mirjak",
@@ -1280,7 +1338,7 @@
       "labels": [],
       "body": "In the current draft, we are having two names of multi-path ACK. I think we should stick to just one.",
       "createdAt": "2021-10-27T02:30:42Z",
-      "updatedAt": "2021-10-27T05:00:33Z",
+      "updatedAt": "2021-10-28T05:36:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -1296,6 +1354,13 @@
           "body": "I submitted PR #62 to fix this.",
           "createdAt": "2021-10-27T05:00:33Z",
           "updatedAt": "2021-10-27T05:00:33Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "I would be consistent in how the I-D identifies MP additions vs. RFC9000. \r\n\r\nGiven that the document uses MP_CONNECTION_ERROR and MP_PROTOCOL_VIOLATION, I have a preference for MP_ACK.",
+          "createdAt": "2021-10-28T05:36:56Z",
+          "updatedAt": "2021-10-28T05:36:56Z"
         }
       ]
     },
@@ -1320,15 +1385,15 @@
       "id": "I_kwDOGNtpaM49z3Ha",
       "title": "Mention the exact section whenever RFC9000 is cited",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/64",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "RFC9000 is cited massively in the draft. It would be helpful to indicate to the reader where to look by indicating the section. \r\n\r\nSome change examples are provided below: \r\n```\r\n\r\nOLD:\r\n`We assume that the reader is familiar with the terminology used in {{QUIC-TRANSPORT}}.`\r\n\r\nNEW:\r\n`We assume that the reader is familiar with the terminology used in {{QUIC-TRANSPORT}} (Section 1.2, in particular).`\r\n```\r\n\r\n```\r\nOLD:\r\n`RTT measurements and PMTU discovery should be per-path (following {{QUIC-TRANSPORT}})`\r\n\r\nNEW:\r\n`RTT measurements and PMTU discovery should `be` per-path (Section 14 of {{QUIC-TRANSPORT}})`\r\n```\r\n\r\nand so on.",
       "createdAt": "2021-10-27T05:55:15Z",
-      "updatedAt": "2021-10-27T06:22:55Z",
-      "closedAt": null,
+      "updatedAt": "2021-10-29T15:00:05Z",
+      "closedAt": "2021-10-29T15:00:05Z",
       "comments": [
         {
           "author": "huitema",
@@ -1336,6 +1401,13 @@
           "body": "Side comment -- please see issue #58 about the use of XML2RFC v3 syntax for links.\r\n\r\nWe can do some of that, but not necessarily everywhere. We do expect that readers are familiar with QUIC V1. If we want to say \"we are just in line with QUIC V1\", then a global reference to RFC 9000 should suffice. If we want to say \"please read this text in QUIC V1, we don't want to replicate here\", then yes, we should refer to the specific section.",
           "createdAt": "2021-10-27T06:22:55Z",
           "updatedAt": "2021-10-27T06:22:55Z"
+        },
+        {
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "body": "Thanks, Christian. That's the intent. ",
+          "createdAt": "2021-10-28T05:37:46Z",
+          "updatedAt": "2021-10-28T05:37:46Z"
         }
       ]
     },
@@ -1344,15 +1416,17 @@
       "id": "I_kwDOGNtpaM49z3aH",
       "title": "QUIC version 1 (very minor)",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/65",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "has PR"
+      ],
       "body": "In order to be consistent with RFC9000, use \"QUIC version 1\" instead of \"QUIC v1\" through the document. \r\n\r\n\r\n\r\n",
       "createdAt": "2021-10-27T05:57:32Z",
-      "updatedAt": "2021-10-27T05:57:32Z",
-      "closedAt": null,
+      "updatedAt": "2021-10-28T13:16:17Z",
+      "closedAt": "2021-10-28T13:16:17Z",
       "comments": []
     },
     {
@@ -1360,15 +1434,15 @@
       "id": "I_kwDOGNtpaM49z6Xt",
       "title": "Handshake Negotiation",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/66",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "* Lack of the reference to Section 7.4/Section 7.4.2 of 9000 where the general handling of (new) transport parameters is discussed. \r\n\r\n* When the new transport parameter is not present, this does not necessarily mean multipath is not supported as it can be supported, but disabled (for this connection as a function of local policy). I would update this text\r\n\r\n```\r\nOLD: \r\nIf the peer does not carry the enable_multipath transport parameter, which means the peer does not\r\nsupport multipath\r\n```\r\n",
       "createdAt": "2021-10-27T06:16:00Z",
-      "updatedAt": "2021-10-27T06:57:23Z",
-      "closedAt": null,
+      "updatedAt": "2021-10-28T07:06:45Z",
+      "closedAt": "2021-10-28T07:06:45Z",
       "comments": [
         {
           "author": "huitema",
@@ -2130,7 +2204,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2021-10-16T10:52:42Z",
-      "updatedAt": "2021-10-18T07:53:29Z",
+      "updatedAt": "2021-10-28T08:12:47Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "0fccf8df3dfd72ff100d5724275250fc205a71bf",
@@ -2193,7 +2267,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2021-10-16T11:45:11Z",
-      "updatedAt": "2021-10-18T07:09:34Z",
+      "updatedAt": "2021-10-28T08:12:46Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "0fccf8df3dfd72ff100d5724275250fc205a71bf",
@@ -3066,7 +3140,7 @@
       "labels": [],
       "body": "For issue #26 ",
       "createdAt": "2021-10-24T18:19:30Z",
-      "updatedAt": "2021-10-25T11:39:43Z",
+      "updatedAt": "2021-10-28T08:12:45Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "0f3c9464445492926e9f1e4460a75ff4030fd368",
@@ -3176,7 +3250,7 @@
       "labels": [],
       "body": "Fix issue #35.",
       "createdAt": "2021-10-24T18:31:30Z",
-      "updatedAt": "2021-10-25T08:24:41Z",
+      "updatedAt": "2021-10-28T08:12:39Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "0f3c9464445492926e9f1e4460a75ff4030fd368",
@@ -4235,24 +4309,26 @@
       "id": "PR_kwDOGNtpaM4tuOlq",
       "title": "Improve text in handshake negotiation",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/67",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "huitema",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Close #66 \r\n",
       "createdAt": "2021-10-27T06:43:19Z",
-      "updatedAt": "2021-10-27T06:56:29Z",
+      "updatedAt": "2021-10-28T07:06:45Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "fd89c897a10bc57f1150df180d0e6348e5ed439c",
       "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "headRefName": "clarify-handshake-nego",
       "headRefOid": "19a58c649413a6c2eacaef9e2136acad2a1d890f",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2021-10-28T07:06:45Z",
+      "mergedAt": "2021-10-28T07:06:45Z",
+      "mergedBy": "Yanmei-Liu",
+      "mergeCommit": {
+        "oid": "65ec23fc4de4ea896a229755be8aeff0b4fb1076"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4279,6 +4355,163 @@
           "body": "",
           "createdAt": "2021-10-27T06:56:29Z",
           "updatedAt": "2021-10-27T06:56:29Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vK65O",
+          "commit": {
+            "abbreviatedOid": "19a58c6"
+          },
+          "author": "boucadair",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Looks good to me. Thanks.",
+          "createdAt": "2021-10-28T05:40:10Z",
+          "updatedAt": "2021-10-28T05:40:10Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vLI4i",
+          "commit": {
+            "abbreviatedOid": "19a58c6"
+          },
+          "author": "Yanmei-Liu",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-28T07:06:33Z",
+          "updatedAt": "2021-10-28T07:06:33Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 69,
+      "id": "PR_kwDOGNtpaM4tyEqL",
+      "title": "[~] replace QUIC v1 with QUIC version 1",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/69",
+      "state": "MERGED",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Be consistent with RFC9000",
+      "createdAt": "2021-10-28T08:22:02Z",
+      "updatedAt": "2021-10-28T13:16:17Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "65ec23fc4de4ea896a229755be8aeff0b4fb1076",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/quic_v1",
+      "headRefOid": "0e357e9b02c55264a38d7be8299b0e8cb6d21be9",
+      "closedAt": "2021-10-28T13:16:17Z",
+      "mergedAt": "2021-10-28T13:16:17Z",
+      "mergedBy": "Yanmei-Liu",
+      "mergeCommit": {
+        "oid": "99fbdfbd34c4ee98f783c954fea366a20e2c2be8"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vMc-1",
+          "commit": {
+            "abbreviatedOid": "0e357e9"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-28T12:27:38Z",
+          "updatedAt": "2021-10-28T12:27:38Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vMeB2",
+          "commit": {
+            "abbreviatedOid": "0e357e9"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-28T12:31:40Z",
+          "updatedAt": "2021-10-28T12:31:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 70,
+      "id": "PR_kwDOGNtpaM4ty8sJ",
+      "title": "[~] Use structured references to section of other documents",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/70",
+      "state": "MERGED",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fix issue #58 ",
+      "createdAt": "2021-10-28T13:07:37Z",
+      "updatedAt": "2021-10-29T15:00:05Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "99fbdfbd34c4ee98f783c954fea366a20e2c2be8",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/section_ref",
+      "headRefOid": "c805d33ac0a19eb247a65af43136a78486776ce6",
+      "closedAt": "2021-10-29T15:00:05Z",
+      "mergedAt": "2021-10-29T15:00:05Z",
+      "mergedBy": "Yanmei-Liu",
+      "mergeCommit": {
+        "oid": "d4511eb97b3d1b3955b5e5dcd9099f234af0a5ab"
+      },
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I went ahead and replaced the references to RFC9000 by QUIC-TRANSPORT, and RFC9001 by QUIC-TLS. I have checked that this produced the expected XML V3.",
+          "createdAt": "2021-10-28T14:00:35Z",
+          "updatedAt": "2021-10-28T14:00:35Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vMy7a",
+          "commit": {
+            "abbreviatedOid": "d827305"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "There is an issue of duplicate references. The modified text refers directly to RFC 9000; this leads to duplicate references to both [QUIC-TRANSPORT] and [RFC9000] in the reference section. We should try to only keep the \"QUIC-TRANSPORT\" form.",
+          "createdAt": "2021-10-28T13:40:03Z",
+          "updatedAt": "2021-10-28T13:40:03Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vM6g5",
+          "commit": {
+            "abbreviatedOid": "c805d33"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "With the fixed references, it works now...",
+          "createdAt": "2021-10-28T14:01:52Z",
+          "updatedAt": "2021-10-28T14:01:52Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vNABl",
+          "commit": {
+            "abbreviatedOid": "c805d33"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-10-28T14:15:50Z",
+          "updatedAt": "2021-10-28T14:15:50Z",
           "comments": []
         }
       ]
