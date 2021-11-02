@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-10-31T00:31:00.204258+00:00",
+  "timestamp": "2021-11-02T00:30:45.220633+00:00",
   "repo": "mirjak/draft-lmbdhk-quic-multipath",
   "labels": [
     {
@@ -1304,10 +1304,12 @@
       "author": "huitema",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "has PR"
+      ],
       "body": "There are many isntances in the markdown source where a whole paragraph is entered in a single line of text. This makes the reviewing harder, and messes up the \"what changed\" view when reviewing PRs.",
       "createdAt": "2021-10-26T16:16:49Z",
-      "updatedAt": "2021-10-27T06:55:57Z",
+      "updatedAt": "2021-10-31T14:11:17Z",
       "closedAt": null,
       "comments": [
         {
@@ -1331,15 +1333,15 @@
       "id": "I_kwDOGNtpaM49zfQV",
       "title": "Mixed use of ACK_MP and MP_ACK",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/61",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "yfmascgy",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "In the current draft, we are having two names of multi-path ACK. I think we should stick to just one.",
       "createdAt": "2021-10-27T02:30:42Z",
-      "updatedAt": "2021-10-28T05:36:57Z",
-      "closedAt": null,
+      "updatedAt": "2021-10-31T14:51:54Z",
+      "closedAt": "2021-10-31T14:51:54Z",
       "comments": [
         {
           "author": "huitema",
@@ -4515,6 +4517,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 71,
+      "id": "PR_kwDOGNtpaM4t5Ewz",
+      "title": "[~] break long lines, no other modifications",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/71",
+      "state": "OPEN",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Each line is limited to 72 characters.",
+      "createdAt": "2021-10-31T14:09:45Z",
+      "updatedAt": "2021-10-31T14:21:58Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "d4511eb97b3d1b3955b5e5dcd9099f234af0a5ab",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/short_lines",
+      "headRefOid": "346e2811de3c1e40eb10ab20ee5100e5ffd42e3b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
