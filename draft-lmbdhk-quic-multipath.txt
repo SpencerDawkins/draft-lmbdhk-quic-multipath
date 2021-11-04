@@ -5,14 +5,14 @@
 QUIC Working Group                                                Y. Liu
 Internet-Draft                                                     Y. Ma
 Intended status: Standards Track                            Alibaba Inc.
-Expires: 6 May 2022                                        Q. De Coninck
+Expires: 8 May 2022                                        Q. De Coninck
                                                           O. Bonaventure
                                                                UCLouvain
                                                               C. Huitema
                                                     Private Octopus Inc.
                                                       M. Kuehlewind, Ed.
                                                                 Ericsson
-                                                         2 November 2021
+                                                         4 November 2021
 
 
                       Multipath Extension for QUIC
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 May 2022.
+   This Internet-Draft will expire on 8 May 2022.
 
 Copyright Notice
 
@@ -195,7 +195,7 @@ Table of Contents
 
    *  Path Identifier (Path ID): An identifier that is used to identify
       a path in a QUIC connection at an endpoint.  Path Identifier is
-      used in multi-path control frames (etc.  PATH_ABANDON frame) to
+      used in multipath control frames (etc.  PATH_ABANDON frame) to
       identify a path.  By default, it is defined as the sequence number
       of the destination Connection ID used for sending packets on that
       particular path, but alternative definitions can be used if the
@@ -237,13 +237,13 @@ Table of Contents
       | Client Option | Definition                | Allowed server |
       |               |                           | responses      |
       +===============+===========================+================+
-      | 0x0           | don't support multi-path  | 0x0            |
+      | 0x0           | don't support multipath   | 0x0            |
       +---------------+---------------------------+----------------+
       | 0x1           | only support one PN space | 0x0 or 0x1     |
-      |               | for multi-path            |                |
+      |               | for multipath             |                |
       +---------------+---------------------------+----------------+
       | 0x2           | only support multiple PN  | 0x0 or 0x2     |
-      |               | spaces for multi-path     |                |
+      |               | spaces for multipath      |                |
       +---------------+---------------------------+----------------+
       | 0x3           | support both one PN space | 0x0, 0x1 or    |
       |               | and multiple PN space     | 0x2            |
@@ -272,7 +272,7 @@ Table of Contents
    does not discuss when a client decides to initiate a new path.  We
    delegate such discussion in separate documents.
 
-   This proposal adds one multi-path control frame for path management:
+   This proposal adds one multipath control frame for path management:
 
    *  PATH_ABANDON frame for the receiver side to abandon the path
       Section 10.1
@@ -968,7 +968,7 @@ Table of Contents
 
 11.  Error Codes
 
-   Multi-path QUIC transport error codes are 62-bit unsigned integers
+   Multipath QUIC transport error codes are 62-bit unsigned integers
    following [QUIC-TRANSPORT].
 
    This section lists the defined multipath QUIC transport error codes
@@ -1019,12 +1019,12 @@ Table of Contents
    +==============+=======================+============+===============+
    | Value        | Code                  |Description | Specification |
    +==============+=======================+============+===============+
-   | TBD          | MP_PROTOCOL_VIOLATION |Multi-path  | Section 11    |
+   | TBD          | MP_PROTOCOL_VIOLATION |Multipath   | Section 11    |
    | (experiments |                       |protocol    |               |
    | use 0xba01)  |                       |violation   |               |
    +--------------+-----------------------+------------+---------------+
 
-                  Table 5: Error Code for Multi-path QUIC
+                   Table 5: Error Code for Multipath QUIC
 
 13.  Security Considerations
 

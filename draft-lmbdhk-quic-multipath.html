@@ -1050,7 +1050,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Liu, et al.</td>
-<td class="center">Expires 6 May 2022</td>
+<td class="center">Expires 8 May 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-lmbdhk-quic-multipath-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-11-02" class="published">2 November 2021</time>
+<time datetime="2021-11-04" class="published">4 November 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-05-06">6 May 2022</time></dd>
+<dd class="expires"><time datetime="2022-05-08">8 May 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1135,7 +1135,7 @@ enable the simultaneous usage of multiple paths for a single connection.<a href=
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 May 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 8 May 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1382,7 +1382,7 @@ capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-3.1">Path Identifier (Path ID): An identifier that is used to identify
 a path in a QUIC connection at an endpoint. Path Identifier is used
-in multi-path control frames (etc. PATH_ABANDON frame) to identify
+in multipath control frames (etc. PATH_ABANDON frame) to identify
 a path. By default, it is defined as the sequence number of
 the destination Connection ID used for sending packets on that
 particular path, but alternative definitions can be used if the length
@@ -1442,17 +1442,17 @@ PN spaces, available option value for client and server are listed in
         <tbody>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">0x0</td>
-            <td class="text-left" rowspan="1" colspan="1">don't support multi-path</td>
+            <td class="text-left" rowspan="1" colspan="1">don't support multipath</td>
             <td class="text-left" rowspan="1" colspan="1">0x0</td>
           </tr>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">0x1</td>
-            <td class="text-left" rowspan="1" colspan="1">only support one PN space for multi-path</td>
+            <td class="text-left" rowspan="1" colspan="1">only support one PN space for multipath</td>
             <td class="text-left" rowspan="1" colspan="1">0x0 or 0x1</td>
           </tr>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">0x2</td>
-            <td class="text-left" rowspan="1" colspan="1">only support multiple PN spaces for multi-path</td>
+            <td class="text-left" rowspan="1" colspan="1">only support multiple PN spaces for multipath</td>
             <td class="text-left" rowspan="1" colspan="1">0x0 or 0x2</td>
           </tr>
           <tr>
@@ -1485,7 +1485,7 @@ header.<a href="#section-2-7" class="pilcrow">¶</a></p>
 multipath feature and can start using multiple paths. This document
 does not discuss when a client decides to initiate a new path. We
 delegate such discussion in separate documents.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">This proposal adds one multi-path control frame for path management:<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-2">This proposal adds one multipath control frame for path management:<a href="#section-3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-3.1">PATH_ABANDON frame for the receiver side to abandon the path
 <a href="#path-abandon-frame" class="xref">Section 10.1</a><a href="#section-3-3.1" class="pilcrow">¶</a>
@@ -2299,7 +2299,7 @@ MP_PROTOCOL_VIOLATION and close the connection.<a href="#section-10.2-6" class="
       <h2 id="name-error-codes">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-error-codes" class="section-name selfRef">Error Codes</a>
       </h2>
-<p id="section-11-1">Multi-path QUIC transport error codes are 62-bit unsigned integers
+<p id="section-11-1">Multipath QUIC transport error codes are 62-bit unsigned integers
 following <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <p id="section-11-2">This section lists the defined multipath QUIC transport error codes
 that can be used in a CONNECTION_CLOSE frame with a type of 0x1c.
@@ -2380,11 +2380,11 @@ the "QUIC Frame Types" registry under the "QUIC Protocol" heading.<a href="#sect
 <p id="section-12-6">The following transport error code defined in <a href="#tab-error-code" class="xref">Table 5</a> should
 be added to the "QUIC Transport Error Codes" registry under
 the "QUIC Protocol" heading.<a href="#section-12-6" class="pilcrow">¶</a></p>
-<span id="name-error-code-for-multi-path-q"></span><div id="tab-error-code">
+<span id="name-error-code-for-multipath-qu"></span><div id="tab-error-code">
 <table class="center" id="table-5">
         <caption>
 <a href="#table-5" class="selfRef">Table 5</a>:
-<a href="#name-error-code-for-multi-path-q" class="selfRef">Error Code for Multi-path QUIC</a>
+<a href="#name-error-code-for-multipath-qu" class="selfRef">Error Code for Multipath QUIC</a>
         </caption>
 <thead>
           <tr>
@@ -2398,7 +2398,7 @@ the "QUIC Protocol" heading.<a href="#section-12-6" class="pilcrow">¶</a></p>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">TBD (experiments use 0xba01)</td>
             <td class="text-left" rowspan="1" colspan="1">MP_PROTOCOL_VIOLATION</td>
-            <td class="text-left" rowspan="1" colspan="1">Multi-path protocol violation</td>
+            <td class="text-left" rowspan="1" colspan="1">Multipath protocol violation</td>
             <td class="text-left" rowspan="1" colspan="1">
               <a href="#error-codes" class="xref">Section 11</a>
 </td>
