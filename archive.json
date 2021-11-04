@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-02T00:30:45.220633+00:00",
+  "timestamp": "2021-11-04T00:29:36.323835+00:00",
   "repo": "mirjak/draft-lmbdhk-quic-multipath",
   "labels": [
     {
@@ -1072,11 +1072,12 @@
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [
-        "For -01"
+        "For -01",
+        "has PR"
       ],
       "body": "The current draft says that \"Servers SHOULD stop sending traffic on paths through where no non-probing packet was received in the last 3 path RTTs\". However, it is possible that only a few data was generated in the past few RTTs due to app-limit conditions, and as a result, only one path was used. So I think, in section 3.2.3, we should suggest the use of some keep-alive mechanisms such as sending ping frames on a particular path if one is interested in keeping that path alive. Let me know what you think?",
       "createdAt": "2021-10-26T08:06:33Z",
-      "updatedAt": "2021-10-28T13:18:47Z",
+      "updatedAt": "2021-11-03T09:54:22Z",
       "closedAt": null,
       "comments": [
         {
@@ -1148,6 +1149,20 @@
           "body": "> By default, the applicability scope is the same as QUIC version 1.\r\n\r\nMaybe, but I think having an architecture figure to illustrate the basic multipath case that is covered would be helpful. \r\n\r\nBTW, there is nothing in the current design that prevents multipath QUIC to be established over the scenario we discussed. I admit this is a side effect, not a desired goal. \r\n\r\n\r\n\r\n\r\n",
           "createdAt": "2021-10-28T13:18:47Z",
           "updatedAt": "2021-10-28T13:18:47Z"
+        },
+        {
+          "author": "Yanmei-Liu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Let's get back to the problem Yunfei mentioned, I just submitted PR #74 for it.\r\n\r\nBy the way, do we need a transport parameter to negotiate max path idle timeout? Like the connection max_idle_timeout in RFC9000, to prevent one of the endpoints end up the path too early...",
+          "createdAt": "2021-11-03T09:48:59Z",
+          "updatedAt": "2021-11-03T09:48:59Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "Why would you have different max_idle_timeout for different paths?",
+          "createdAt": "2021-11-03T09:54:22Z",
+          "updatedAt": "2021-11-03T09:54:22Z"
         }
       ]
     },
@@ -1160,10 +1175,12 @@
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "has PR"
+      ],
       "body": "`While separate packet number spaces allow for more efficient ACK encoding, especially when paths have highly different latencies, this approach requires the use of a connection ID`\r\n\r\nNot sure to understand why the last part of the sentence is an issue. The use of zero-length connection IDs is problematic anyway in setups with NATs, for example. ",
       "createdAt": "2021-10-26T09:25:47Z",
-      "updatedAt": "2021-10-26T19:04:27Z",
+      "updatedAt": "2021-11-03T05:36:43Z",
       "closedAt": null,
       "comments": [
         {
@@ -1201,7 +1218,7 @@
       "labels": [],
       "body": "> When the multipath option is negotiated, clients that want to use an additional path MUST first initiate the Address Validation procedure with PATH_CHALLENGE and PATH_RESPONSE frames described in Section 8 of {{QUIC-TRANSPORT}}.\r\n\r\nThere are two cases: \r\n* the client uses a distinct source IP address and/or port number: in such case, Address validation does not make sense. \r\n* the client uses a distinct destination IP address and/or port number: I guess this is what is covered in the excerpt. If that's the case, this assumes that the client has discovered a distinct destination IP address/port number (either by some means or that the server has used these address/port).\r\n\r\nI think some elaboration is needed. ",
       "createdAt": "2021-10-26T13:30:36Z",
-      "updatedAt": "2021-10-27T05:36:46Z",
+      "updatedAt": "2021-11-03T08:19:20Z",
       "closedAt": null,
       "comments": [
         {
@@ -1238,6 +1255,13 @@
           "body": "> \r\n> \r\n> This is deliberately left out of the document. What we have now is a simple reference to RFC 9000 -- paths are established in exactly the same way, adding more details would just create confusion. The consensus is that we may very well want to have extensions there, more ways to find addresses, etc., and that those should be detailed in a companion RFC.\r\n\r\nThanks for the clarification. The case I'm concerned about is not the second case in my initial comment, but the first one. A client may have the knowlegde of the local addresses. I don't see how path validation from the client side applies for this case.  ",
           "createdAt": "2021-10-27T05:36:46Z",
           "updatedAt": "2021-10-27T05:36:46Z"
+        },
+        {
+          "author": "Yanmei-Liu",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Thanks for the clarification. The case I'm concerned about is not the second case in my initial comment, but the first one. A client may have the knowlegde of the local addresses. I don't see how path validation from the client side applies for this case.\r\n\r\nIn the first case, path validation from the server side check the reachability of the client new address. Endpoints do path validation in both directions when initializing new path, as the same in section 8.2 of RFC 9000. You can find the whole work flow in the first figure of Section Example.\r\n",
+          "createdAt": "2021-11-03T08:19:19Z",
+          "updatedAt": "2021-11-03T08:19:19Z"
         }
       ]
     },
@@ -1280,10 +1304,12 @@
       "assignees": [
         "mirjak"
       ],
-      "labels": [],
+      "labels": [
+        "has PR"
+      ],
       "body": "@boucadair flagged in his PRs that there are many places using hyphenated \"multi-path\" and many using \"multipath\". We need to fix that.",
       "createdAt": "2021-10-26T16:14:58Z",
-      "updatedAt": "2021-10-26T16:33:46Z",
+      "updatedAt": "2021-11-03T04:05:07Z",
       "closedAt": null,
       "comments": [
         {
@@ -1300,7 +1326,7 @@
       "id": "I_kwDOGNtpaM49x7nO",
       "title": "Lines in markdown text are too long",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/60",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "huitema",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -1309,8 +1335,8 @@
       ],
       "body": "There are many isntances in the markdown source where a whole paragraph is entered in a single line of text. This makes the reviewing harder, and messes up the \"what changed\" view when reviewing PRs.",
       "createdAt": "2021-10-26T16:16:49Z",
-      "updatedAt": "2021-10-31T14:11:17Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-02T12:32:11Z",
+      "closedAt": "2021-11-02T12:32:11Z",
       "comments": [
         {
           "author": "qdeconinck",
@@ -3390,7 +3416,7 @@
       "labels": [],
       "body": "Given the deadline, let's first have one set of values instead of two. We may want to decide a third value set later. ",
       "createdAt": "2021-10-25T07:07:27Z",
-      "updatedAt": "2021-10-25T11:37:27Z",
+      "updatedAt": "2021-11-03T03:52:51Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "56ff275d2e17bbfb5a9d593451a851e5030fbdc5",
@@ -4399,7 +4425,7 @@
       "labels": [],
       "body": "Be consistent with RFC9000",
       "createdAt": "2021-10-28T08:22:02Z",
-      "updatedAt": "2021-10-28T13:16:17Z",
+      "updatedAt": "2021-11-03T03:52:32Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "65ec23fc4de4ea896a229755be8aeff0b4fb1076",
@@ -4454,7 +4480,7 @@
       "labels": [],
       "body": "Fix issue #58 ",
       "createdAt": "2021-10-28T13:07:37Z",
-      "updatedAt": "2021-10-29T15:00:05Z",
+      "updatedAt": "2021-11-03T03:52:30Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "99fbdfbd34c4ee98f783c954fea366a20e2c2be8",
@@ -4523,26 +4549,242 @@
       "id": "PR_kwDOGNtpaM4t5Ewz",
       "title": "[~] break long lines, no other modifications",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/71",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "Yanmei-Liu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Each line is limited to 72 characters.",
       "createdAt": "2021-10-31T14:09:45Z",
-      "updatedAt": "2021-10-31T14:21:58Z",
+      "updatedAt": "2021-11-02T12:32:11Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "d4511eb97b3d1b3955b5e5dcd9099f234af0a5ab",
       "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "headRefName": "dev/short_lines",
-      "headRefOid": "346e2811de3c1e40eb10ab20ee5100e5ffd42e3b",
+      "headRefOid": "7e2030aee318a7d5377aab96dd25e5684c30182c",
+      "closedAt": "2021-11-02T12:32:11Z",
+      "mergedAt": "2021-11-02T12:32:11Z",
+      "mergedBy": "qdeconinck",
+      "mergeCommit": {
+        "oid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88"
+      },
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I verified that this PR produces the draft that we expect. I did one small change: remove spaces at the end of lines.",
+          "createdAt": "2021-11-02T06:22:15Z",
+          "updatedAt": "2021-11-02T06:22:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vYWn5",
+          "commit": {
+            "abbreviatedOid": "7e2030a"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-02T06:22:31Z",
+          "updatedAt": "2021-11-02T06:22:31Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vZslw",
+          "commit": {
+            "abbreviatedOid": "7e2030a"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-02T12:32:04Z",
+          "updatedAt": "2021-11-02T12:32:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "id": "PR_kwDOGNtpaM4uA9n_",
+      "title": "[~] replace multi-path with multipath",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/72",
+      "state": "OPEN",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Be consistent with title.",
+      "createdAt": "2021-11-03T04:02:20Z",
+      "updatedAt": "2021-11-03T14:36:05Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/multipath",
+      "headRefOid": "94037fde7c2c9ee4f1cfb97020e6b6f801fc60c8",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vdo9B",
+          "commit": {
+            "abbreviatedOid": "94037fd"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-03T09:46:43Z",
+          "updatedAt": "2021-11-03T09:46:43Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4ve9Br",
+          "commit": {
+            "abbreviatedOid": "94037fd"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-03T14:36:05Z",
+          "updatedAt": "2021-11-03T14:36:05Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 73,
+      "id": "PR_kwDOGNtpaM4uBGPy",
+      "title": "[~] adjust the discussion for pros/cons of pn spaces to Section 7",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/73",
+      "state": "OPEN",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-11-03T05:34:45Z",
+      "updatedAt": "2021-11-03T14:46:06Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/pn_space",
+      "headRefOid": "9b052619ae00698e4d0f32d43b91ebd0b6690a9e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vdomj",
+          "commit": {
+            "abbreviatedOid": "2fe551a"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-03T09:46:12Z",
+          "updatedAt": "2021-11-03T09:46:13Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "```suggestion\r\nconnection ID for less overhead, e.g., in highly constrained networks\r\n```",
+              "createdAt": "2021-11-03T09:46:12Z",
+              "updatedAt": "2021-11-03T09:46:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vdoq2",
+          "commit": {
+            "abbreviatedOid": "2fe551a"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-03T09:46:18Z",
+          "updatedAt": "2021-11-03T09:46:18Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4ve-91",
+          "commit": {
+            "abbreviatedOid": "9b05261"
+          },
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-03T14:41:35Z",
+          "updatedAt": "2021-11-03T14:46:06Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "I would drop the example in the last sentence. It implies that overhead is only an issue in \"highly constrained\" networks, while in practice Chrome does it to minimize aggregated overhead regardless of network constraints. Dropping the text from \", e.g., \" to the final dot avoids speculation on why people do not like overhead.",
+              "createdAt": "2021-11-03T14:41:35Z",
+              "updatedAt": "2021-11-03T14:46:06Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "Note that there are really 2 arguments for the single space approach. Overhead is one, but \"fewer code changes\" is another. So I would say \"this approach requires the use of a connection ID and also more changes from QUIC version 1.\"",
+              "createdAt": "2021-11-03T14:44:45Z",
+              "updatedAt": "2021-11-03T14:46:06Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 74,
+      "id": "PR_kwDOGNtpaM4uBnCu",
+      "title": "[~] avoid idle timeout of paths",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/74",
+      "state": "OPEN",
+      "author": "Yanmei-Liu",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "To fix #51 ",
+      "createdAt": "2021-11-03T09:40:28Z",
+      "updatedAt": "2021-11-03T09:44:43Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "dev/path_timeout",
+      "headRefOid": "40ddba8e998333771d01e258a9c8fa63e3cbefab",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4vdn56",
+          "commit": {
+            "abbreviatedOid": "40ddba8"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-03T09:44:43Z",
+          "updatedAt": "2021-11-03T09:44:43Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
