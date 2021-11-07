@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-11-04T00:29:36.323835+00:00",
+  "timestamp": "2021-11-07T00:30:46.832069+00:00",
   "repo": "mirjak/draft-lmbdhk-quic-multipath",
   "labels": [
     {
@@ -1067,7 +1067,7 @@
       "id": "I_kwDOGNtpaM49v64i",
       "title": "Mechanisms to avoid path timeout",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/51",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "yfmascgy",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -1077,8 +1077,8 @@
       ],
       "body": "The current draft says that \"Servers SHOULD stop sending traffic on paths through where no non-probing packet was received in the last 3 path RTTs\". However, it is possible that only a few data was generated in the past few RTTs due to app-limit conditions, and as a result, only one path was used. So I think, in section 3.2.3, we should suggest the use of some keep-alive mechanisms such as sending ping frames on a particular path if one is interested in keeping that path alive. Let me know what you think?",
       "createdAt": "2021-10-26T08:06:33Z",
-      "updatedAt": "2021-11-03T09:54:22Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-05T06:30:22Z",
+      "closedAt": "2021-11-05T06:30:22Z",
       "comments": [
         {
           "author": "boucadair",
@@ -1163,6 +1163,13 @@
           "body": "Why would you have different max_idle_timeout for different paths?",
           "createdAt": "2021-11-03T09:54:22Z",
           "updatedAt": "2021-11-03T09:54:22Z"
+        },
+        {
+          "author": "yfmascgy",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Why would you have different max_idle_timeout for different paths?\r\n\r\nThe max_idle_timeout defined in RFC9000 is used to close whole connection, but not the path. In order to close an idle path more precisely, one might need sth like max_path_idle_timeout. I think we want all paths to have the same max_path_idle_timeout values, which is used to control when a path should be closed when no non-probing packets was received on that path. Another approach is to use PING frame to keep a path alive. ",
+          "createdAt": "2021-11-04T08:19:04Z",
+          "updatedAt": "2021-11-04T08:19:04Z"
         }
       ]
     },
@@ -1171,7 +1178,7 @@
       "id": "I_kwDOGNtpaM49wPGz",
       "title": "this approach requires the use of a connection ID",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/53",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -1180,8 +1187,8 @@
       ],
       "body": "`While separate packet number spaces allow for more efficient ACK encoding, especially when paths have highly different latencies, this approach requires the use of a connection ID`\r\n\r\nNot sure to understand why the last part of the sentence is an issue. The use of zero-length connection IDs is problematic anyway in setups with NATs, for example. ",
       "createdAt": "2021-10-26T09:25:47Z",
-      "updatedAt": "2021-11-03T05:36:43Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-04T15:39:42Z",
+      "closedAt": "2021-11-04T15:39:42Z",
       "comments": [
         {
           "author": "mirjak",
@@ -1211,15 +1218,15 @@
       "id": "I_kwDOGNtpaM49xL55",
       "title": "Path Initiation",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/56",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "boucadair",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "> When the multipath option is negotiated, clients that want to use an additional path MUST first initiate the Address Validation procedure with PATH_CHALLENGE and PATH_RESPONSE frames described in Section 8 of {{QUIC-TRANSPORT}}.\r\n\r\nThere are two cases: \r\n* the client uses a distinct source IP address and/or port number: in such case, Address validation does not make sense. \r\n* the client uses a distinct destination IP address and/or port number: I guess this is what is covered in the excerpt. If that's the case, this assumes that the client has discovered a distinct destination IP address/port number (either by some means or that the server has used these address/port).\r\n\r\nI think some elaboration is needed. ",
       "createdAt": "2021-10-26T13:30:36Z",
-      "updatedAt": "2021-11-03T08:19:20Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-05T06:33:12Z",
+      "closedAt": "2021-11-05T06:33:12Z",
       "comments": [
         {
           "author": "huitema",
@@ -1298,7 +1305,7 @@
       "id": "I_kwDOGNtpaM49x7Kp",
       "title": "Inconsistent use of multi-path and multipath",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/59",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "huitema",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -1309,8 +1316,8 @@
       ],
       "body": "@boucadair flagged in his PRs that there are many places using hyphenated \"multi-path\" and many using \"multipath\". We need to fix that.",
       "createdAt": "2021-10-26T16:14:58Z",
-      "updatedAt": "2021-11-03T04:05:07Z",
-      "closedAt": null,
+      "updatedAt": "2021-11-04T05:55:53Z",
+      "closedAt": "2021-11-04T05:55:53Z",
       "comments": [
         {
           "author": "mirjak",
@@ -1525,6 +1532,88 @@
           "updatedAt": "2021-10-27T07:22:52Z"
         }
       ]
+    },
+    {
+      "number": 75,
+      "id": "I_kwDOGNtpaM4-WSyw",
+      "title": "Handshake negotiation: what does \"Allowed server responses\" mean",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/75",
+      "state": "CLOSED",
+      "author": "LPardue",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In Section 2 you define a transport parameter and set of values. These are presented in a table with a column header \"Allowed server responses\", what does that mean? One way to read this is that it implies servers would tailor their Transport Parameters to the value sent by the client but that's conflicting with our philosophy that TPs are unilateral declarations, not active negotiation.\r\n\r\nSo the question for me is, is this just a wording issue or a design one?",
+      "createdAt": "2021-11-05T16:29:58Z",
+      "updatedAt": "2021-11-06T08:30:49Z",
+      "closedAt": "2021-11-06T08:30:49Z",
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "I think this mainly means that server are not allow to send 0x3. However, if the client sends 0x3, the server's reply will impact the client behaviour for 1-RTT packets. Is that a negotiation? However, keep in mind that the intention is not to publish this as it.",
+          "createdAt": "2021-11-05T16:34:37Z",
+          "updatedAt": "2021-11-05T16:34:37Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "unilateral negotiation is ok by me. If that's the intent then maybe just rewording of the table to be clariy it is a matrix of combinations is ok, and state somewhere that server 0x3 is illegal.\r\n\r\n> keep in mind that the intention is not to publish this as it.\r\n\r\ndo you mean not to adopt the draft with this type of TP, or the final RFC? I think better clarity is needed for implementation and experiementation as we try and answer the PN question",
+          "createdAt": "2021-11-05T16:53:48Z",
+          "updatedAt": "2021-11-05T16:53:48Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@LPardue that's my fault. I wrote that table based on my implementation, in which the server response does depend on the client proposal. We should replace it by a matrix showing what is expected if the client proposes 0-1-2-3 and the server 0-1-2-3. The only problematic case is \"3 and 3\", and we should simply state what happens there.",
+          "createdAt": "2021-11-05T17:01:47Z",
+          "updatedAt": "2021-11-05T17:01:47Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@LPardue please review PR #76",
+          "createdAt": "2021-11-05T17:47:41Z",
+          "updatedAt": "2021-11-05T17:47:41Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@huitema thanks for the clarification, the new text makes the intent much more clear IMO.",
+          "createdAt": "2021-11-05T18:03:45Z",
+          "updatedAt": "2021-11-05T18:03:45Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "body": "Just to clarify, we are not intending to have this in the final *RFC*. We would like to have it adopted as it to enable more experimentation.",
+          "createdAt": "2021-11-05T19:38:39Z",
+          "updatedAt": "2021-11-05T19:38:39Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "thanks @mirjak that also works for me!",
+          "createdAt": "2021-11-05T19:51:43Z",
+          "updatedAt": "2021-11-05T19:51:43Z"
+        }
+      ]
+    },
+    {
+      "number": 77,
+      "id": "I_kwDOGNtpaM4-X7jr",
+      "title": "Do we need ack frequency control per path?",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/issues/77",
+      "state": "OPEN",
+      "author": "yfmascgy",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In our testing, one thing worth noticing is that for different sim cards, the uplink/downlink ratio can be quite different. For example, with a China Mobile 4G card, we measured a downlink at 35Mbps and an uplink at 3Mbps, while with a China Telecom 4G card, we measured a downlink at 45Mbps and an uplink at 23Mbps at the same time in the same spot. \r\n\r\nIf we want to measure RTT more precisely, we let ACK return from the same path. However, because some sim cards are more asymmetrical than the others, it introduced a question, do we want ack frequency control per path?\r\n\r\nIn the QUIC ack-frequency draft, one of the motivations is to handle link asymmetry such that the link throughput won't be constraint by ack packets in the reverse direction. My understanding is that some 5G IoT cards can be more asymmetrical, so do we want to add a mechanism to address this issue? What do you think?",
+      "createdAt": "2021-11-06T08:27:09Z",
+      "updatedAt": "2021-11-06T08:27:09Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -4556,7 +4645,7 @@
       "labels": [],
       "body": "Each line is limited to 72 characters.",
       "createdAt": "2021-10-31T14:09:45Z",
-      "updatedAt": "2021-11-02T12:32:11Z",
+      "updatedAt": "2021-11-05T07:48:42Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "d4511eb97b3d1b3955b5e5dcd9099f234af0a5ab",
@@ -4612,24 +4701,26 @@
       "id": "PR_kwDOGNtpaM4uA9n_",
       "title": "[~] replace multi-path with multipath",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/72",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "Yanmei-Liu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Be consistent with title.",
       "createdAt": "2021-11-03T04:02:20Z",
-      "updatedAt": "2021-11-03T14:36:05Z",
+      "updatedAt": "2021-11-05T07:48:08Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
       "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "headRefName": "dev/multipath",
       "headRefOid": "94037fde7c2c9ee4f1cfb97020e6b6f801fc60c8",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2021-11-04T05:55:53Z",
+      "mergedAt": "2021-11-04T05:55:53Z",
+      "mergedBy": "Yanmei-Liu",
+      "mergeCommit": {
+        "oid": "2fb158afe5b8faeb492ac92ce561815e32c72614"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4665,24 +4756,26 @@
       "id": "PR_kwDOGNtpaM4uBGPy",
       "title": "[~] adjust the discussion for pros/cons of pn spaces to Section 7",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/73",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "Yanmei-Liu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2021-11-03T05:34:45Z",
-      "updatedAt": "2021-11-03T14:46:06Z",
+      "updatedAt": "2021-11-05T07:48:06Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
       "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "headRefName": "dev/pn_space",
-      "headRefOid": "9b052619ae00698e4d0f32d43b91ebd0b6690a9e",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "4419674dc75349c525e3d0aa5fe202ca47a6a3bc",
+      "closedAt": "2021-11-04T15:39:42Z",
+      "mergedAt": "2021-11-04T15:39:42Z",
+      "mergedBy": "qdeconinck",
+      "mergeCommit": {
+        "oid": "d23e5c1fa53f122b952052a311c804b35e26a640"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4743,6 +4836,39 @@
               "updatedAt": "2021-11-03T14:46:06Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vhwi0",
+          "commit": {
+            "abbreviatedOid": "4419674"
+          },
+          "author": "Yanmei-Liu",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-11-04T06:15:01Z",
+          "updatedAt": "2021-11-04T06:15:01Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "I deleted the example after \"e.g.\". \r\n\r\n\"more changes from QUIC version 1\" depends on the specific implementation, as multiple PN spaces could keep the loss detect and ack arrangement part unchanged.\r\nSo maybe we can learn from more implementations and I prefer not to draw the conclusion too early.",
+              "createdAt": "2021-11-04T06:15:01Z",
+              "updatedAt": "2021-11-04T06:15:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vjxRa",
+          "commit": {
+            "abbreviatedOid": "4419674"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-04T15:32:29Z",
+          "updatedAt": "2021-11-04T15:32:29Z",
+          "comments": []
         }
       ]
     },
@@ -4751,24 +4877,26 @@
       "id": "PR_kwDOGNtpaM4uBnCu",
       "title": "[~] avoid idle timeout of paths",
       "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/74",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "Yanmei-Liu",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "To fix #51 ",
       "createdAt": "2021-11-03T09:40:28Z",
-      "updatedAt": "2021-11-03T09:44:43Z",
+      "updatedAt": "2021-11-05T07:48:04Z",
       "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "baseRefName": "master",
       "baseRefOid": "be62a93c8882aad30d399c1a77c9dd91bfe7ab88",
       "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
       "headRefName": "dev/path_timeout",
-      "headRefOid": "40ddba8e998333771d01e258a9c8fa63e3cbefab",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "677a7c3578546dfa79fddf9dbe9d52086847d9de",
+      "closedAt": "2021-11-05T06:30:23Z",
+      "mergedAt": "2021-11-05T06:30:22Z",
+      "mergedBy": "Yanmei-Liu",
+      "mergeCommit": {
+        "oid": "186af37cbe04db4db291df319a4daef2f7cde92d"
+      },
       "comments": [],
       "reviews": [
         {
@@ -4782,6 +4910,81 @@
           "body": "",
           "createdAt": "2021-11-03T09:44:43Z",
           "updatedAt": "2021-11-03T09:44:43Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vjyx2",
+          "commit": {
+            "abbreviatedOid": "677a7c3"
+          },
+          "author": "qdeconinck",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-04T15:37:12Z",
+          "updatedAt": "2021-11-04T15:37:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 76,
+      "id": "PR_kwDOGNtpaM4uKUnH",
+      "title": "Do not assume real time formatting of server TP",
+      "url": "https://github.com/mirjak/draft-lmbdhk-quic-multipath/pull/76",
+      "state": "MERGED",
+      "author": "huitema",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The current text assumes that the server transport parameters are composed after seeing the client's proposal. As pointed out in issue #75, this is a deviation from standard QUIC practice. The proposed text fixes that and specifies what happens if both endpoints select option 3, \"support both\". In that case, option 2 \"multiple number spaces\" is selected.\r\n\r\nClose #75",
+      "createdAt": "2021-11-05T17:46:20Z",
+      "updatedAt": "2021-11-06T08:30:49Z",
+      "baseRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "baseRefName": "master",
+      "baseRefOid": "186af37cbe04db4db291df319a4daef2f7cde92d",
+      "headRepository": "mirjak/draft-lmbdhk-quic-multipath",
+      "headRefName": "tp-nego-uni",
+      "headRefOid": "48ef911bf175c8a108b165e9848b0d0714716329",
+      "closedAt": "2021-11-06T08:30:49Z",
+      "mergedAt": "2021-11-06T08:30:48Z",
+      "mergedBy": "yfmascgy",
+      "mergeCommit": {
+        "oid": "1c0722d3b2dc99d0af02281203a19fb8147bcb03"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOGNtpaM4voqh_",
+          "commit": {
+            "abbreviatedOid": "0dc4939"
+          },
+          "author": "LPardue",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "LTGTM just 2 nits",
+          "createdAt": "2021-11-05T18:02:25Z",
+          "updatedAt": "2021-11-05T18:03:01Z",
+          "comments": [
+            {
+              "originalPosition": 24,
+              "body": "```suggestion\r\nIf for any one of the endpoints the parameter is absent or set to 0,\r\nor if the two endpoints select incompatible values,\r\n```",
+              "createdAt": "2021-11-05T18:02:26Z",
+              "updatedAt": "2021-11-05T18:03:01Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOGNtpaM4vo9Dw",
+          "commit": {
+            "abbreviatedOid": "48ef911"
+          },
+          "author": "mirjak",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-11-05T19:39:36Z",
+          "updatedAt": "2021-11-05T19:39:36Z",
           "comments": []
         }
       ]
